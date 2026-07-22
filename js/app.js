@@ -145,17 +145,17 @@ document.addEventListener('click', (e) => {
 
 // ==================== ARTICLES DATA WITH IMAGES ====================
 const articles = [
-    { id: 1, filter: 'all', title: { en: 'The Three Stages of Menopause, Gently Explained', ar: 'المراحل الثلاث لانقطاع الطمث، موضحة بلطف' }, readTime: '4 min', featured: true, imageUrl: 'https://images.unsplash.com/photo-1508003516284-85f43b4b46b7?w=800&h=450&fit=crop', author: 'Dr. Emma Walsh', publishDate: '2024-03-15',
+    { id: 1, filter: 'all', title: { en: 'The Three Stages of Menopause, Gently Explained', ar: 'المراحل الثلاث لانقطاع الطمث، موضحة بلطف' }, readTime: '4 min', featured: true, imageUrl: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=800&h=450&fit=crop', author: 'Dr. Emma Walsh', publishDate: '2024-03-15',
       content: { en: '<div class="article-body"><p>Menopause is not a single event. It is a journey with three phases, and understanding them can help you feel less alone.</p><p><strong>Perimenopause (the early stage):</strong> This usually starts in your 40s. Your ovaries are gradually reducing oestrogen and progesterone. Your cycle may become irregular — sometimes months pass, sometimes weeks apart. Brain fog, mood swings, and sleep disruption often start here.</p><p><strong>Menopause (the milestone):</strong> Officially, you have reached menopause when you have not had a period for 12 consecutive months. It is a moment in time, not a state.</p><p><strong>Postmenopause:</strong> Everything after that 12-month mark. Some symptoms ease, but others — like vaginal dryness or joint pain — may linger.</p><p>You are not going mad. Your body is simply adjusting to a new chapter.</p></div>', ar: '<div class="article-body"><p>انقطاع الطمث ليس حدثًا واحدًا. إنها رحلة بثلاث مراحل.</p></div>' }},
-    { id: 2, filter: 'peri', title: { en: 'Why Brain Fog Is Real & What Helps', ar: 'لماذا ضباب الدماغ حقيقي (وما يساعد)' }, readTime: '5 min', imageUrl: 'https://images.unsplash.com/photo-1559825481-12a05b00b928?w=800&h=450&fit=crop', author: 'Dr. Sarah Chen', publishDate: '2024-03-10',
+    { id: 2, filter: 'peri', title: { en: 'Why Brain Fog Is Real & What Helps', ar: 'لماذا ضباب الدماغ حقيقي (وما يساعد)' }, readTime: '5 min', imageUrl: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=450&fit=crop', author: 'Dr. Sarah Chen', publishDate: '2024-03-10',
       content: { en: '<div class="article-body"><p>Brain fog is one of the most isolating symptoms because no one else can see it. You can see a hot flash coming, but brain fog creeps up quietly.</p><p><strong>The science:</strong> Oestrogen supports acetylcholine, a neurotransmitter crucial for memory and focus. When oestrogen drops, so does acetylcholine. Your brain is not broken — it is recalibrating.</p><p><strong>What helps:</strong><ul><li>Sleep: Non-negotiable. Your brain consolidates memories during sleep.</li><li>Protein: Amino acids support neurotransmitter production.</li><li>Movement: Even a 20-minute walk increases blood flow to your brain.</li><li>Hydration: Dehydration worsens brain fog instantly.</li></ul></p></div>', ar: '' }},
-    { id: 3, filter: 'menopause', title: { en: 'Hot Flushes: The Science of Sudden Heat', ar: 'الهبات الساخنة: علم الحرارة المفاجئة' }, readTime: '3 min', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d93c7b5534?w=800&h=450&fit=crop', author: 'Dr. James Miller', publishDate: '2024-03-05',
+    { id: 3, filter: 'menopause', title: { en: 'Hot Flushes: The Science of Sudden Heat', ar: 'الهبات الساخنة: علم الحرارة المفاجئة' }, readTime: '3 min', imageUrl: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800&h=450&fit=crop', author: 'Dr. James Miller', publishDate: '2024-03-05',
       content: { en: '<div class="article-body"><p>A hot flash does not come from nowhere. It is a predictable response from your hypothalamus.</p><p><strong>What is happening:</strong> Your hypothalamus — your internal thermostat — becomes oversensitive during menopause. A tiny rise in core temperature (sometimes just 0.5°C) triggers a full cooling response: sweating, flushing, heart racing.</p><p><strong>Why it feels worse at night:</strong> Core body temperature naturally rises in the evening. For many women, this is when hot flashes strike.</p><p><strong>What helps:</strong> Layers you can remove, cool water nearby, regular exercise, and good sleep hygiene.</p></div>', ar: '' }},
-    { id: 4, filter: 'peri', title: { en: 'Rebuilding Sleep When Hormones Shift', ar: 'إعادة بناء النوم عندما تتغير الهرمونات' }, readTime: '4 min', imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=450&fit=crop', author: 'Dr. Lisa Wong', publishDate: '2024-02-28',
+    { id: 4, filter: 'peri', title: { en: 'Rebuilding Sleep When Hormones Shift', ar: 'إعادة بناء النوم عندما تتغير الهرمونات' }, readTime: '4 min', imageUrl: 'https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?w=800&h=450&fit=crop', author: 'Dr. Lisa Wong', publishDate: '2024-02-28',
       content: { en: '<div class="article-body"><p>Sleep disruption is one of the cruellest symptoms because everything feels harder without rest. Progesterone, which helps us feel sleepy, is dropping. Cortisol, which should be lowest at night, is often elevated.</p><p><strong>Small changes that work:</strong><ul><li>Consistency: Same bedtime, same wake time, even weekends.</li><li>Cool, dark room: Aim for 16–19°C.</li><li>No screens after 8pm: Blue light suppresses melatonin.</li><li>Magnesium: Consider a spray or bath salt.</li></ul></p></div>', ar: '' }},
     { id: 5, filter: 'post', title: { en: 'Nutrition After 40: The Quiet Upgrade', ar: 'التغذية بعد 40: الترقية الهادئة' }, readTime: '4 min', imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=450&fit=crop', author: 'Dr. Amanda Roberts', publishDate: '2024-02-20',
       content: { en: '<div class="article-body"><p>Your body needs different fuel now. Metabolism has slowed, but nutrient needs have climbed.</p><p><strong>Protein matters more:</strong> Aim for 25–30g per meal. It preserves muscle, stabilizes blood sugar, and supports mood.</p><p><strong>Healthy fats are not the enemy:</strong> Olive oil, avocado, nuts, and fatty fish support hormone production and brain health.</p><p><strong>Iron and B vitamins:</strong> Many women become anaemic after significant blood loss stops. Get levels checked.</p></div>', ar: '' }},
-    { id: 6, filter: 'all', title: { en: 'Hormone Changes & Emotional Wellbeing', ar: 'تغييرات الهرمونات والرفاهية العاطفية' }, readTime: '5 min', imageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=450&fit=crop', author: 'Dr. Rachel Green', publishDate: '2024-02-15',
+    { id: 6, filter: 'all', title: { en: 'Hormone Changes & Emotional Wellbeing', ar: 'تغييرات الهرمونات والرفاهية العاطفية' }, readTime: '5 min', imageUrl: 'https://images.unsplash.com/photo-1477332552946-cfb384aeaf1c?w=800&h=450&fit=crop', author: 'Dr. Rachel Green', publishDate: '2024-02-15',
       content: { en: '<div class="article-body"><p>The emotional symptoms of menopause are not just "in your head" — they are firmly rooted in biochemistry.</p><p><strong>Why mood shifts happen:</strong> Oestrogen affects serotonin production. When oestrogen fluctuates, so does your neurotransmitter balance.</p><p><strong>What to expect:</strong> Anxiety, depression, irritability, and emotional intensity are all common and treatable.</p></div>', ar: '' }},
     { id: 7, filter: 'post', title: { en: 'Strength Training After 40', ar: 'تمارين القوة بعد 40' }, readTime: '6 min', imageUrl: 'https://images.unsplash.com/photo-1552258297-4a6b2db18264?w=800&h=450&fit=crop', author: 'Coach Maria Santos', publishDate: '2024-02-10',
       content: { en: '<div class="article-body"><p>Strength training is not just for young people. After 40, it becomes even more important for bone health, metabolism, and mood.</p><p><strong>Why it matters:</strong> Oestrogen decline accelerates bone loss. Strength training builds and maintains bone density naturally.</p><p><strong>Getting started:</strong> Begin with 2-3 sessions per week. Focus on compound movements that engage multiple muscle groups.</p></div>', ar: '' }}
@@ -217,13 +217,25 @@ function getHormoneInsight(log) {
 }
 
 const symptomConfig = [
-    { id: 'brain-fog', label: { en: 'Brain fog', ar: 'ضباب الدماغ' }, color: '#C8B8DB' },
-    { id: 'hot-flashes', label: { en: 'Hot flashes', ar: 'الهبات الساخنة' }, color: '#E8B4B8' },
-    { id: 'anxiety', label: { en: 'Anxiety', ar: 'القلق' }, color: '#F5D5C0' },
-    { id: 'mood-swings', label: { en: 'Mood swings', ar: 'تقلبات المزاج' }, color: '#B8C9B8' },
-    { id: 'sleep-issues', label: { en: 'Sleep', ar: 'النوم' }, color: '#A8C4D9' },
-    { id: 'fatigue', label: { en: 'Fatigue', ar: 'الإرهاق' }, color: '#D4C4B0' }
+    { id: 'hot-flashes-night-sweats', label: { en: 'Hot flashes and night sweats', ar: 'الهبات الساخنة والتعرق الليلي' } },
+    { id: 'sleep-problems', label: { en: 'Sleep problems', ar: 'مشاكل النوم' } },
+    { id: 'brain-fog-memory', label: { en: 'Brain fog and poor memory', ar: 'ضباب الدماغ وضعف الذاكرة' } },
+    { id: 'mood-changes-irritability', label: { en: 'Mood changes and irritability', ar: 'تغيرات المزاج والتهيج' } },
+    { id: 'anxiety', label: { en: 'Anxiety', ar: 'القلق' } },
+    { id: 'fatigue-exhaustion', label: { en: 'Fatigue and exhaustion', ar: 'الإرهاق والتعب الشديد' } },
+    { id: 'joint-muscle-aches', label: { en: 'Joint and muscle aches', ar: 'آلام المفاصل والعضلات' } },
+    { id: 'headaches', label: { en: 'Headaches', ar: 'الصداع' } },
+    { id: 'weight-gain', label: { en: 'Weight gain', ar: 'زيادة الوزن' } },
+    { id: 'vaginal-dryness', label: { en: 'Vaginal dryness', ar: 'جفاف المهبل' } }
 ];
+
+const symptomMigrationMap = {
+    'hot-flashes': 'hot-flashes-night-sweats',
+    'sleep-issues': 'sleep-problems',
+    'brain-fog': 'brain-fog-memory',
+    'mood-swings': 'mood-changes-irritability',
+    'fatigue': 'fatigue-exhaustion'
+};
 
 function renderTracker() {
     const logs = Storage.get('logs') || [];
@@ -233,6 +245,19 @@ function renderTracker() {
         todayLog = { date: today, mood: 3, sleep: 6, stress: 3, water: 5, symptoms: {} };
         symptomConfig.forEach(s => todayLog.symptoms[s.id] = 0);
     }
+    // Migrate legacy symptom keys to current IDs
+    if (todayLog.symptoms) {
+        Object.entries(symptomMigrationMap).forEach(function([oldKey, newKey]) {
+            if (todayLog.symptoms[oldKey] !== undefined && todayLog.symptoms[newKey] === undefined) {
+                todayLog.symptoms[newKey] = todayLog.symptoms[oldKey];
+            }
+        });
+    } else {
+        todayLog.symptoms = {};
+    }
+    symptomConfig.forEach(function(s) {
+        if (todayLog.symptoms[s.id] === undefined) todayLog.symptoms[s.id] = 0;
+    });
     AppState.todayLog = todayLog;
     renderWeeklyChart(logs);
     const moodEl = document.getElementById('track-mood');
@@ -246,7 +271,20 @@ function renderTracker() {
     updateSliderLabels();
     const symptomList = document.getElementById('symptom-list');
     if (symptomList) {
-        symptomList.innerHTML = symptomConfig.map(s => '<div class="symptom-item"><div class="symptom-header"><div class="symptom-name"><span class="symptom-dot" style="background:' + s.color + '"></span><span>' + getText(s.label) + '</span></div><div class="symptom-value" id="symptom-val-' + s.id + '">' + todayLog.symptoms[s.id] + '/5</div></div><div class="symptom-scale">' + Array.from({length:6}, (_, i) => '<button class="scale-btn' + (todayLog.symptoms[s.id] === i ? ' selected' : '') + '" data-symptom="' + s.id + '" data-value="' + i + '" onclick="setSymptom(\'' + s.id + '\', ' + i + ')">' + i + '</button>').join('') + '</div></div>').join('');
+        symptomList.innerHTML = symptomConfig.map(function(s) {
+            var val = todayLog.symptoms[s.id] || 0;
+            return '<div class="symptom-slider-group">' +
+                '<div class="tracker-slider-label">' +
+                    '<span>' + getText(s.label) + '</span>' +
+                    '<span id="symptom-val-' + s.id + '">' + val + '/5</span>' +
+                '</div>' +
+                '<input type="range" min="0" max="5" step="1" value="' + val + '" ' +
+                    'class="tracker-slider symptom-slider" ' +
+                    'id="track-sym-' + s.id + '" ' +
+                    'data-symptom="' + s.id + '" ' +
+                    'aria-label="' + getText(s.label) + '">' +
+            '</div>';
+        }).join('');
     }
 }
 
@@ -282,8 +320,7 @@ function updateSliderLabels() {
 
 function setSymptom(symptomId, value) {
     if (!AppState.todayLog) return;
-    AppState.todayLog.symptoms[symptomId] = value;
-    document.querySelectorAll('[data-symptom="' + symptomId + '"]').forEach(btn => btn.classList.toggle('selected', parseInt(btn.dataset.value) === value));
+    AppState.todayLog.symptoms[symptomId] = parseInt(value);
     const valEl = document.getElementById('symptom-val-' + symptomId);
     if (valEl) valEl.textContent = value + '/5';
 }
@@ -313,7 +350,19 @@ function saveTracker() {
     renderHome();
 }
 
-document.addEventListener('input', (e) => { if (e.target.classList.contains('tracker-slider')) updateSliderLabels(); });
+document.addEventListener('input', function(e) {
+    if (!e.target.classList.contains('tracker-slider')) return;
+    if (e.target.classList.contains('symptom-slider')) {
+        var symptomId = e.target.dataset.symptom;
+        if (symptomId && AppState.todayLog) {
+            AppState.todayLog.symptoms[symptomId] = parseInt(e.target.value);
+            var valEl = document.getElementById('symptom-val-' + symptomId);
+            if (valEl) valEl.textContent = e.target.value + '/5';
+        }
+    } else {
+        updateSliderLabels();
+    }
+});
 
 function renderInsights() {
     const container = document.getElementById('insights-container');
