@@ -1049,7 +1049,7 @@ body[dir="rtl"] .action-card:active {
         padding-bottom: 16px;
     }
     .chat-header {
-        padding: max(20px, var(--safe-area-top)) 24px 20px;
+        padding: max(20px, var(--safe-area-top)) 24px 20px 24px;
     }
     .chat-messages {
         padding: 20px 24px;
