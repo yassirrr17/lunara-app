@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#C8B8DB">
+    <title>Lunara</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="light-mode" data-lang="en">
+
+    <!-- ==================== APP CONTAINER ==================== -->
+    <div id="app">
+
+        <!-- ==================== ONBOARDING ==================== -->
+        <section id="onboarding" class="screen active">
+            <div class="onboarding-container">
+                <!-- Step 1: Welcome -->
+                <div class="onboarding-step" data-step="1">
+                    <div class="ob-gradient-header">
+                        <div class="ob-moon">&#9790;</div>
+                        <h1 class="ob-title" data-en="Lunara" data-ar="لونارا">Lunara</h1>
+                        <p class="ob-subtitle" data-en="Your gentle companion through perimenopause and menopause" data-ar="رفيقتك اللطيفة خلال فترة ما قبل انقطاع الطمث وانقطاعه">Your gentle companion through perimenopause and menopause</p>
+                    </div>
+                    <div class="ob-content">
+                        <p class="ob-text" data-en="We are here to help you feel understood, supported, and never alone." data-ar="نحن هنا لمساعدتك على الشعور بالتفهم والدعم وأنك لست وحدك أبدًا.">We are here to help you feel understood, supported, and never alone.</p>
+                        <button class="btn-primary" onclick="nextOnboardingStep()">
+                            <span data-en="Begin" data-ar="ابدئي">Begin</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Age -->
+                <div class="onboarding-step hidden" data-step="2">
+                    <div class="ob-top">
+                        <div class="ob-progress"><div class="ob-progress-fill" style="width:14%"></div></div>
+                        <h2 data-en="How old are you?" data-ar="كم عمرك؟">How old are you?</h2>
+                        <p class="ob-hint" data-en="This helps us personalise your experience." data-ar="هذا يساعدنا في تخصيص تجربتك.">This helps us personalise your experience.</p>
+                    </div>
+                    <div class="ob-options age-options">
+                        <button class="ob-option" data-value="30-35">30-35</button>
+                        <button class="ob-option" data-value="36-40">36-40</button>
+                        <button class="ob-option" data-value="41-45">41-45</button>
+                        <button class="ob-option" data-value="46-50">46-50</button>
+                        <button class="ob-option" data-value="51-55">51-55</button>
+                        <button class="ob-option" data-value="55+">55+</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Symptoms -->
+                <div class="onboarding-step hidden" data-step="3">
+                    <div class="ob-top">
+                        <div class="ob-progress"><div class="ob-progress-fill" style="width:28%"></div></div>
+                        <h2 data-en="What are you experiencing?" data-ar="ما الذي تشعرين به؟">What are you experiencing?</h2>
+                        <p class="ob-hint" data-en="Select all that feel true for you." data-ar="اختر كل ما يشعرك بالصدق.">Select all that feel true for you.</p>
+                    </div>
+                    <div class="ob-options symptom-options">
+                        <button class="ob-option ob-card" data-value="brain-fog">
+                            <span class="ob-icon">&#x1F9E0;</span>
+                            <span data-en="Brain Fog" data-ar="ضباب الدماغ">Brain Fog</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="hot-flashes">
+                            <span class="ob-icon">&#x1F525;</span>
+                            <span data-en="Hot Flashes" data-ar="الهبات الساخنة">Hot Flashes</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="anxiety">
+                            <span class="ob-icon">&#x1F30A;</span>
+                            <span data-en="Anxiety" data-ar="القلق">Anxiety</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="sleep-issues">
+                            <span class="ob-icon">&#x1F319;</span>
+                            <span data-en="Sleep Issues" data-ar="مشاكل النوم">Sleep Issues</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="mood-swings">
+                            <span class="ob-icon">&#x1F327;</span>
+                            <span data-en="Mood Swings" data-ar="تقلبات المزاج">Mood Swings</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="fatigue">
+                            <span class="ob-icon">&#x1F4A4;</span>
+                            <span data-en="Fatigue" data-ar="الإرهاق">Fatigue</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="joint-pain">
+                            <span class="ob-icon">&#x1F9B5;</span>
+                            <span data-en="Joint Pain" data-ar="ألم المفاصل">Joint Pain</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="low-libido">
+                            <span class="ob-icon">&#x1F495;</span>
+                            <span data-en="Low Libido" data-ar="انخفاض الرغبة">Low Libido</span>
+                        </button>
+                    </div>
+                    <button class="btn-primary" onclick="nextOnboardingStep()">
+                        <span data-en="Continue" data-ar="استمري">Continue</span>
+                    </button>
+                </div>
+
+                <!-- Step 4: Goals -->
+                <div class="onboarding-step hidden" data-step="4">
+                    <div class="ob-top">
+                        <div class="ob-progress"><div class="ob-progress-fill" style="width:42%"></div></div>
+                        <h2 data-en="What matters most to you?" data-ar="ما الأكثر أهمية لك؟">What matters most to you?</h2>
+                    </div>
+                    <div class="ob-options goal-options">
+                        <button class="ob-option ob-card" data-value="sleep-better">
+                            <span data-en="Sleep Better" data-ar="النوم بشكل أفضل">Sleep Better</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="reduce-stress">
+                            <span data-en="Reduce Stress" data-ar="تقليل التوتر">Reduce Stress</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="understand-body">
+                            <span data-en="Understand My Body" data-ar="فهم جسدي">Understand My Body</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="feel-less-alone">
+                            <span data-en="Feel Less Alone" data-ar="الشعور بأنني لست وحدي">Feel Less Alone</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="prepare-gp">
+                            <span data-en="Prepare for GP Visits" data-ar="الاستعداد لزيارات الطبيب">Prepare for GP Visits</span>
+                        </button>
+                        <button class="ob-option ob-card" data-value="daily-energy">
+                            <span data-en="More Daily Energy" data-ar="المزيد من الطاقة اليومية">More Daily Energy</span>
+                        </button>
+                    </div>
+                    <button class="btn-primary" onclick="nextOnboardingStep()">
+                        <span data-en="Continue" data-ar="استمري">Continue</span>
+                    </button>
+                </div>
+
+                <!-- Step 5: Lifestyle -->
+                <div class="onboarding-step hidden" data-step="5">
+                    <div class="ob-top">
+                        <div class="ob-progress"><div class="ob-progress-fill" style="width:56%"></div></div>
+                        <h2 data-en="A bit about your lifestyle" data-ar="قليلاً عن نمط حياتك">A bit about your lifestyle</h2>
+                    </div>
+                    <div class="ob-questions">
+                        <div class="ob-question">
+                            <label data-en="How is your sleep generally?" data-ar="كيف هو نومك عمومًا؟">How is your sleep generally?</label>
+                            <div class="ob-slider-group">
+                                <input type="range" min="1" max="5" value="3" class="ob-slider" id="ob-sleep">
+                                <div class="ob-slider-labels">
+                                    <span data-en="Terrible" data-ar="سيء جدًا">Terrible</span>
+                                    <span data-en="Great" data-ar="ممتاز">Great</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ob-question">
+                            <label data-en="How would you rate your stress?" data-ar="كيف تقيمين مستوى التوتر لديك؟">How would you rate your stress?</label>
+                            <div class="ob-slider-group">
+                                <input type="range" min="1" max="5" value="3" class="ob-slider" id="ob-stress">
+                                <div class="ob-slider-labels">
+                                    <span data-en="Overwhelmed" data-ar="مُنهك">Overwhelmed</span>
+                                    <span data-en="Calm" data-ar="هادئ">Calm</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ob-question">
+                            <label data-en="Are you currently working with a GP?" data-ar="هل تتعاملين حاليًا مع طبيب عام؟">Are you currently working with a GP?</label>
+                            <div class="ob-toggle-group">
+                                <button class="ob-toggle" data-value="yes" data-en="Yes" data-ar="نعم">Yes</button>
+                                <button class="ob-toggle" data-value="no" data-en="No" data-ar="لا">No</button>
+                                <button class="ob-toggle" data-value="considering" data-en="Considering" data-ar="أفكر في ذلك">Considering</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="finishOnboarding()">
+                        <span data-en="Create My Space" data-ar="أنشئي مساحتي">Create My Space</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== MAIN APP SCREENS ==================== -->
+        <main id="main-app" class="hidden">
+
+            <!-- ----- HOME DASHBOARD ----- -->
+            <section id="home" class="screen active">
+                <div class="home-header">
+                    <div class="home-greeting">
+                        <p class="greeting-text" data-en="Good day," data-ar="يوم سعيد،">Good day,</p>
+                        <h2 class="user-name">Beautiful</h2>
+                    </div>
+                    <div class="home-avatar" onclick="navigateTo('settings')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                </div>
+
+                <div class="dashboard-scroll">
+                    <!-- Wellness Score Card -->
+                    <div class="wellness-card gradient-lavender">
+                        <div class="wellness-label" data-en="TODAY'S WELLNESS" data-ar="عافية اليوم">TODAY'S WELLNESS</div>
+                        <div class="wellness-score">
+                            <span class="score-number" id="wellness-score">--</span>
+                            <span class="score-total">/100</span>
+                        </div>
+                        <p class="wellness-message" id="wellness-message" data-en="Loading your insights..." data-ar="جاري تحميل رؤاك...">Loading your insights...</p>
+                        <div class="wellness-hormone">
+                            <span class="leaf">&#127807;</span>
+                            <span id="hormone-insight" data-en="Tracking your patterns..." data-ar="تتبع أنماطك...">Tracking your patterns...</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card" onclick="navigateTo('tracker')">
+                            <div class="stat-icon bg-moon">&#127769;</div>
+                            <div class="stat-value" id="stat-sleep">--</div>
+                            <div class="stat-label" data-en="Sleep" data-ar="النوم">Sleep</div>
+                        </div>
+                        <div class="stat-card" onclick="navigateTo('tracker')">
+                            <div class="stat-icon bg-rose">&#9786;</div>
+                            <div class="stat-value" id="stat-mood">--</div>
+                            <div class="stat-label" data-en="Mood" data-ar="المزاج">Mood</div>
+                        </div>
+                        <div class="stat-card" onclick="navigateTo('tracker')">
+                            <div class="stat-icon bg-peach">&#128167;</div>
+                            <div class="stat-value" id="stat-stress">--</div>
+                            <div class="stat-label" data-en="Stress" data-ar="التوتر">Stress</div>
+                        </div>
+                        <div class="stat-card" onclick="navigateTo('tracker')">
+                            <div class="stat-icon bg-sage">&#128167;</div>
+                            <div class="stat-value" id="stat-water">--</div>
+                            <div class="stat-label" data-en="Water" data-ar="الماء">Water</div>
+                        </div>
+                    </div>
+
+                    <!-- For You Today -->
+                    <h3 class="section-title" data-en="For you today" data-ar="من أجلك اليوم">For you today</h3>
+                    <div class="action-cards">
+                        <div class="action-card" onclick="navigateTo('daily-plan')">
+                            <div class="action-icon bg-sun">&#9728;</div>
+                            <div class="action-info">
+                                <h4 data-en="Your personalised plan" data-ar="خطتك المخصصة">Your personalised plan</h4>
+                                <p data-en="Morning ritual · nutrition · movement · sleep" data-ar="طقوس الصباح · التغذية · الحركة · النوم">Morning ritual · nutrition · movement · sleep</p>
+                            </div>
+                            <span class="action-arrow">&#8250;</span>
+                        </div>
+                        <div class="action-card" onclick="navigateTo('insights')">
+                            <div class="action-icon bg-star">&#10024;</div>
+                            <div class="action-info">
+                                <h4 data-en="AI health insights" data-ar="رؤى الذكاء الاصطناعي الصحية">AI health insights</h4>
+                                <p data-en="Patterns Luna noticed in your last 14 days" data-ar="أنماط لاحظتها لونا في آخر 14 يومًا">Patterns Luna noticed in your last 14 days</p>
+                            </div>
+                            <span class="action-arrow">&#8250;</span>
+                        </div>
+                        <div class="action-card" onclick="navigateTo('community')">
+                            <div class="action-icon bg-people">&#128101;</div>
+                            <div class="action-info">
+                                <h4 data-en="Community" data-ar="المجتمع">Community</h4>
+                                <p data-en="Anonymous stories, questions, and support" data-ar="قصص وأسئلة ودعم مجهول">Anonymous stories, questions, and support</p>
+                            </div>
+                            <span class="action-arrow">&#8250;</span>
+                        </div>
+                        <div class="action-card premium-glow" onclick="navigateTo('premium')">
+                            <div class="action-icon bg-crown">&#11088;</div>
+                            <div class="action-info">
+                                <h4 data-en="Lunara Premium" data-ar="لونارا بريميوم">Lunara Premium</h4>
+                                <p data-en="Unlimited AI chat, deeper insights, and more" data-ar="دردشة AI غير محدودة، رؤى أعمق، والمزيد">Unlimited AI chat, deeper insights, and more</p>
+                            </div>
+                            <span class="action-arrow">&#8250;</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ----- SYMPTOM TRACKER ----- -->
+            <section id="tracker" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="navigateTo('home')">&#8249;</button>
+                    <h2 data-en="Track today" data-ar="تتبعي اليوم">Track today</h2>
+                </div>
+                <p class="screen-subtitle" data-en="Small check-ins add up to real patterns." data-ar="التسجيلات الصغيرة تتراكم لتصبح أنماطًا حقيقية.">Small check-ins add up to real patterns.</p>
+
+                <div class="tracker-scroll">
+                    <!-- Weekly Mood Chart -->
+                    <div class="tracker-card">
+                        <h3 data-en="Weekly mood" data-ar="المزاج الأسبوعي">Weekly mood</h3>
+                        <div class="weekly-chart" id="weekly-chart">
+                            <!-- JS renders bars here -->
+                        </div>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="tracker-card">
+                        <h3 data-en="How you feel" data-ar="كيف تشعرين">How you feel</h3>
+                        <div class="tracker-slider-group">
+                            <div class="tracker-slider-label">
+                                <span data-en="Mood" data-ar="المزاج">Mood</span>
+                                <span id="val-mood">--</span>
+                            </div>
+                            <input type="range" min="1" max="5" class="tracker-slider mood-slider" id="track-mood">
+                        </div>
+                        <div class="tracker-slider-group">
+                            <div class="tracker-slider-label">
+                                <span data-en="Sleep" data-ar="النوم">Sleep</span>
+                                <span id="val-sleep">--</span>
+                            </div>
+                            <input type="range" min="0" max="10" step="0.5" class="tracker-slider sleep-slider" id="track-sleep">
+                        </div>
+                        <div class="tracker-slider-group">
+                            <div class="tracker-slider-label">
+                                <span data-en="Stress" data-ar="التوتر">Stress</span>
+                                <span id="val-stress">--</span>
+                            </div>
+                            <input type="range" min="1" max="5" class="tracker-slider stress-slider" id="track-stress">
+                        </div>
+                        <div class="tracker-slider-group">
+                            <div class="tracker-slider-label">
+                                <span data-en="Water" data-ar="الماء">Water</span>
+                                <span id="val-water">--</span>
+                            </div>
+                            <input type="range" min="0" max="10" class="tracker-slider water-slider" id="track-water">
+                        </div>
+                    </div>
+
+                    <!-- Symptoms -->
+                    <div class="tracker-card">
+                        <h3 data-en="Symptoms today" data-ar="الأعراض اليوم">Symptoms today</h3>
+                        <div class="symptom-list" id="symptom-list">
+                            <!-- JS renders symptom toggles -->
+                        </div>
+                    </div>
+
+                    <button class="btn-primary btn-save" onclick="saveTracker()">
+                        <span data-en="Save today's log" data-ar="احفظي سجل اليوم">Save today's log</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ----- AI INSIGHTS ----- -->
+            <section id="insights" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="navigateTo('home')">&#8249;</button>
+                    <h2 data-en="Your Insights" data-ar="رؤاك">Your Insights</h2>
+                </div>
+                <p class="screen-subtitle" data-en="Patterns Luna has noticed." data-ar="أنماط لاحظتها لونا.">Patterns Luna has noticed.</p>
+
+                <div class="insights-scroll" id="insights-container">
+                    <!-- JS populates insights -->
+                </div>
+            </section>
+
+            <!-- ----- DAILY PLAN ----- -->
+            <section id="daily-plan" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="navigateTo('home')">&#8249;</button>
+                    <h2 data-en="Your Daily Plan" data-ar="خطتك اليومية">Your Daily Plan</h2>
+                </div>
+                <p class="screen-subtitle" data-en="Gentle structure for your day." data-ar="هيكل لطيف ليومك.">Gentle structure for your day.</p>
+
+                <div class="plan-scroll" id="daily-plan-container">
+                    <!-- JS populates plan -->
+                </div>
+            </section>
+
+            <!-- ----- COMMUNITY ----- -->
+            <section id="community" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="navigateTo('home')">&#8249;</button>
+                    <h2 data-en="Community" data-ar="المجتمع">Community</h2>
+                </div>
+                <p class="screen-subtitle" data-en="You are not alone in this." data-ar="أنت لست وحدك في هذا.">You are not alone in this.</p>
+
+                <div class="community-tabs">
+                    <button class="comm-tab active" data-tab="stories" data-en="Stories" data-ar="قصص">Stories</button>
+                    <button class="comm-tab" data-tab="expert" data-en="Expert" data-ar="خبيرة">Expert</button>
+                    <button class="comm-tab" data-tab="support" data-en="Support" data-ar="دعم">Support</button>
+                </div>
+
+                <div class="community-scroll" id="community-feed">
+                    <!-- JS populates posts -->
+                </div>
+            </section>
+
+            <!-- ----- EDUCATION HUB ----- -->
+            <section id="education" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="navigateTo('home')">&#8249;</button>
+                    <h2 data-en="Learn" data-ar="تعلمي">Learn</h2>
+                </div>
+                <p class="screen-subtitle" data-en="Gentle, honest guides. No jargon." data-ar="أدلة لطيفة وصادقة. بدون مصطلحات طبية معقدة.">Gentle, honest guides. No jargon.</p>
+
+                <div class="edu-tabs">
+                    <button class="edu-tab active" data-filter="all" data-en="All" data-ar="الكل">All</button>
+                    <button class="edu-tab" data-filter="peri" data-en="Peri" data-ar="ما قبل">Peri</button>
+                    <button class="edu-tab" data-filter="menopause" data-en="Menopause" data-ar="انقطاع الطمث">Menopause</button>
+                    <button class="edu-tab" data-filter="post" data-en="Post" data-ar="ما بعد">Post</button>
+                </div>
+
+                <div class="education-scroll" id="education-feed">
+                    <!-- JS populates articles -->
+                </div>
+            </section>
+
+            <!-- ----- AI CHAT (LUNA) ----- -->
+            <section id="chat" class="screen">
+                <div class="chat-header">
+                    <button class="back-btn" onclick="navigateTo('home')">&#8249;</button>
+                    <div class="chat-avatar">
+                        <div class="luna-avatar">L</div>
+                        <div class="luna-status"></div>
+                    </div>
+                    <div class="chat-title">
+                        <h3>Luna</h3>
+                        <p data-en="Warm, private, judgement-free." data-ar="دافئة، خاصة، خالية من الحكم.">Warm, private, judgement-free.</p>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chat-messages">
+                    <!-- JS populates messages -->
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="chat-suggestions" id="chat-suggestions">
+                        <button class="chat-chip" onclick="sendQuickMessage(this)" data-en="Why am I so tired?" data-ar="لماذا أشعر بالتعب الشديد؟">Why am I so tired?</button>
+                        <button class="chat-chip" onclick="sendQuickMessage(this)" data-en="Help me sleep better" data-ar="ساعديني على النوم بشكل أفضل">Help me sleep better</button>
+                        <button class="chat-chip" onclick="sendQuickMessage(this)" data-en="What is perimenopause?" data-ar="ما هو ما قبل انقطاع الطمث؟">What is perimenopause?</button>
+                    </div>
+                    <div class="chat-input-row">
+                        <input type="text" class="chat-input" id="chat-input" 
+                            data-en-placeholder="Ask Luna anything..." 
+                            data-ar-placeholder="اسألي لونا أي شيء..."
+                            placeholder="Ask Luna anything...">
+                        <button class="chat-send" onclick="sendMessage()">&#9650;</button>
+                    </div>
+                    <p class="chat-limit" id="chat-limit">3/3 messages today</p>
+                </div>
+            </section>
+
+            <!-- ----- PREMIUM / SUBSCRIPTION ----- -->
+            <section id="premium" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="navigateTo('home')">&#8249;</button>
+                    <h2 data-en="Lunara Premium" data-ar="لونارا بريميوم">Lunara Premium</h2>
+                </div>
+
+                <div class="premium-scroll">
+                    <div class="premium-hero gradient-rose">
+                        <h3 data-en="Feel understood, every single day." data-ar="أشعري بالتفهم، كل يوم.">Feel understood, every single day.</h3>
+                        <p data-en="Unlock the full power of your wellness companion." data-ar="افتحي القوة الكاملة لرفيقة عافيتك.">Unlock the full power of your wellness companion.</p>
+                    </div>
+
+                    <div class="premium-features">
+                        <div class="premium-feature">
+                            <div class="pf-icon">&#128196;</div>
+                            <div class="pf-text">
+                                <h4 data-en="My Health Report" data-ar="تقريري الصحي">My Health Report</h4>
+                                <p data-en="A warm, GP-ready summary of your journey." data-ar="ملخص دافئ جاهز لطبيبك العام عن رحلتك.">A warm, GP-ready summary of your journey.</p>
+                            </div>
+                        </div>
+                        <div class="premium-feature">
+                            <div class="pf-icon">&#128172;</div>
+                            <div class="pf-text">
+                                <h4 data-en="Unlimited Luna Chat" data-ar="دردشة لونا غير محدودة">Unlimited Luna Chat</h4>
+                                <p data-en="Ask anything, anytime. No limits." data-ar="اسألي أي شيء، في أي وقت. بدون حدود.">Ask anything, anytime. No limits.</p>
+                            </div>
+                        </div>
+                        <div class="premium-feature">
+                            <div class="pf-icon">&#128161;</div>
+                            <div class="pf-text">
+                                <h4 data-en="Deep AI Health Insights" data-ar="رؤى صحية عميقة بالذكاء الاصطناعي">Deep AI Health Insights</h4>
+                                <p data-en="Patterns and predictions tailored to you." data-ar="أنماط وتوقعات مخصصة لك.">Patterns and predictions tailored to you.</p>
+                            </div>
+                        </div>
+                        <div class="premium-feature">
+                            <div class="pf-icon">&#127891;</div>
+                            <div class="pf-text">
+                                <h4 data-en="Full Education Library" data-ar="المكتبة التعليمية الكاملة">Full Education Library</h4>
+                                <p data-en="Every article, guide, and expert answer." data-ar="كل مقال ودليل وإجابة خبيرة.">Every article, guide, and expert answer.</p>
+                            </div>
+                        </div>
+                        <div class="premium-feature">
+                            <div class="pf-icon">&#128200;</div>
+                            <div class="pf-text">
+                                <h4 data-en="Weekly & Monthly Reports" data-ar="تقارير أسبوعية وشهرية">Weekly & Monthly Reports</h4>
+                                <p data-en="See your progress unfold over time." data-ar="شاهدي تقدمك مع مرور الوقت.">See your progress unfold over time.</p>
+                            </div>
+                        </div>
+                        <div class="premium-feature">
+                            <div class="pf-icon">&#128274;</div>
+                            <div class="pf-text">
+                                <h4 data-en="Private Data Promise" data-ar="وعد الخصوصية">Private Data Promise</h4>
+                                <p data-en="Your data is yours. Always." data-ar="بياناتك ملكك. دائمًا.">Your data is yours. Always.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pricing-cards">
+                        <div class="pricing-card" onclick="selectPlan(this, 'monthly')">
+                            <div class="pc-top">
+                                <span class="pc-name" data-en="Monthly" data-ar="شهري">Monthly</span>
+                                <span class="pc-price">$9.99<span data-en="/month" data-ar="/شهر">/month</span></span>
+                            </div>
+                            <p class="pc-note" data-en="Cancel anytime." data-ar="إلغاء في أي وقت.">Cancel anytime.</p>
+                        </div>
+                        <div class="pricing-card recommended" onclick="selectPlan(this, 'yearly')">
+                            <div class="pc-badge" data-en="Best Value" data-ar="أفضل قيمة">Best Value</div>
+                            <div class="pc-top">
+                                <span class="pc-name" data-en="Yearly" data-ar="سنوي">Yearly</span>
+                                <span class="pc-price">$59<span data-en="/year" data-ar="/سنة">/year</span></span>
+                            </div>
+                            <p class="pc-note" data-en="Save 50%. Less than a coffee per week." data-ar="وفر 50%. أقل من ثمن قهوة في الأسبوع.">Save 50%. Less than a coffee per week.</p>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary btn-large" onclick="subscribe()">
+                        <span data-en="Start My Premium Journey" data-ar="ابدئي رحلتك المميزة">Start My Premium Journey</span>
+                    </button>
+                    <p class="premium-note" data-en="This is a demo. No real payment is processed." data-ar="هذا عرض تجريبي. لا يتم معالجة أي دفع حقيقي.">This is a demo. No real payment is processed.</p>
+                </div>
+            </section>
+
+            <!-- ----- SETTINGS ----- -->
+            <section id="settings" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="navigateTo('home')">&#8249;</button>
+                    <h2 data-en="Settings" data-ar="الإعدادات">Settings</h2>
+                </div>
+
+                <div class="settings-scroll">
+                    <div class="settings-group">
+                        <h3 data-en="Appearance" data-ar="المظهر">Appearance</h3>
+                        <div class="setting-row">
+                            <span data-en="Dark Mode" data-ar="الوضع الداكن">Dark Mode</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <span data-en="Language" data-ar="اللغة">Language</span>
+                            <button class="lang-btn" onclick="toggleLanguage()">
+                                <span id="current-lang">English</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3 data-en="Account" data-ar="الحساب">Account</h3>
+                        <div class="setting-row" onclick="navigateTo('premium')">
+                            <span data-en="Lunara Premium" data-ar="لونارا بريميوم">Lunara Premium</span>
+                            <span class="setting-status" id="premium-status" data-en="Free" data-ar="مجاني">Free</span>
+                        </div>
+                        <div class="setting-row">
+                            <span data-en="My Health Report" data-ar="تقريري الصحي">My Health Report</span>
+                            <span class="setting-lock">&#128274;</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3 data-en="Support" data-ar="الدعم">Support</h3>
+                        <div class="setting-row">
+                            <span data-en="New Zealand: Call or text 1737" data-ar="نيوزيلندا: اتصلي أو ارسلي رسالة إلى 1737">New Zealand: Call or text 1737</span>
+                        </div>
+                        <div class="setting-row">
+                            <span data-en="Australia: Lifeline 13 11 14" data-ar="أستراليا: لايفلاين 13 11 14">Australia: Lifeline 13 11 14</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-outline" onclick="resetApp()">
+                        <span data-en="Reset All Data" data-ar="إعادة تعيين جميع البيانات">Reset All Data</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ----- ARTICLE READER ----- -->
+            <section id="article" class="screen">
+                <div class="screen-header">
+                    <button class="back-btn" onclick="goBackFromArticle()">&#8249;</button>
+                </div>
+                <div class="article-scroll" id="article-content">
+                    <!-- JS populates article -->
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ==================== BOTTOM NAVIGATION ==================== -->
+        <nav id="bottom-nav" class="hidden">
+            <button class="nav-btn active" data-target="home" onclick="navigateTo('home')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span data-en="Home" data-ar="الرئيسية">Home</span>
+            </button>
+            <button class="nav-btn" data-target="tracker" onclick="navigateTo('tracker')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                <span data-en="Track" data-ar="تتبع">Track</span>
+            </button>
+            <button class="nav-btn" data-target="chat" onclick="navigateTo('chat')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                <span data-en="Luna" data-ar="لونا">Luna</span>
+            </button>
+            <button class="nav-btn" data-target="education" onclick="navigateTo('education')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                <span data-en="Learn" data-ar="تعلمي">Learn</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- ==================== PREMIUM MODAL ==================== -->
+    <div id="premium-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closePremiumModal()"></div>
+        <div class="modal-card">
+            <div class="modal-icon">&#127807;</div>
+            <h3 data-en="This is a Premium feature" data-ar="هذه ميزة بريميوم">This is a Premium feature</h3>
+            <p id="premium-modal-text" data-en="I would love to go deeper on this for you. The full guide is waiting inside Premium." data-ar="أحب أن أتعمق في هذا معك. الدليل الكامل ينتظرك في البريميوم.">I would love to go deeper on this for you. The full guide is waiting inside Premium.</p>
+            <button class="btn-primary" onclick="navigateTo('premium'); closePremiumModal();">
+                <span data-en="Explore Premium" data-ar="استكشفي البريميوم">Explore Premium</span>
+            </button>
+            <button class="btn-text" onclick="closePremiumModal()">
+                <span data-en="Maybe later" data-ar="ربما لاحقًا">Maybe later</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
