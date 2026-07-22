@@ -237,6 +237,23 @@ const symptomMigrationMap = {
     'fatigue': 'fatigue-exhaustion'
 };
 
+function normaliseSymptomValue(value) {
+    if (value === true) return 1;
+    if (value === false || value === null || value === undefined || value === '') return 0;
+    const parsed = parseInt(value, 10);
+    if (Number.isNaN(parsed)) return 0;
+    return Math.max(0, Math.min(5, parsed));
+}
+
+function persistTodayLog() {
+    if (!AppState.todayLog) return;
+    let logs = Storage.get('logs') || [];
+    logs = logs.filter(l => l.date !== AppState.todayLog.date);
+    logs.push(AppState.todayLog);
+    Storage.set('logs', logs);
+    AppState.logs = logs;
+}
+
 function renderTracker() {
     const logs = Storage.get('logs') || [];
     const today = new Date().toISOString().split('T')[0];
@@ -256,7 +273,7 @@ function renderTracker() {
         todayLog.symptoms = {};
     }
     symptomConfig.forEach(function(s) {
-        if (todayLog.symptoms[s.id] === undefined) todayLog.symptoms[s.id] = 0;
+        todayLog.symptoms[s.id] = normaliseSymptomValue(todayLog.symptoms[s.id]);
     });
     AppState.todayLog = todayLog;
     renderWeeklyChart(logs);
@@ -272,15 +289,16 @@ function renderTracker() {
     const symptomList = document.getElementById('symptom-list');
     if (symptomList) {
         symptomList.innerHTML = symptomConfig.map(function(s) {
-            var val = todayLog.symptoms[s.id] || 0;
+            var sliderId = 'track-sym-' + s.id;
+            var val = normaliseSymptomValue(todayLog.symptoms[s.id]);
             return '<div class="symptom-slider-group">' +
                 '<div class="tracker-slider-label">' +
-                    '<span>' + getText(s.label) + '</span>' +
+                    '<label for="' + sliderId + '">' + getText(s.label) + '</label>' +
                     '<span id="symptom-val-' + s.id + '">' + val + '/5</span>' +
                 '</div>' +
                 '<input type="range" min="0" max="5" step="1" value="' + val + '" ' +
                     'class="tracker-slider symptom-slider" ' +
-                    'id="track-sym-' + s.id + '" ' +
+                    'id="' + sliderId + '" ' +
                     'data-symptom="' + s.id + '" ' +
                     'aria-label="' + getText(s.label) + '">' +
             '</div>';
@@ -320,9 +338,10 @@ function updateSliderLabels() {
 
 function setSymptom(symptomId, value) {
     if (!AppState.todayLog) return;
-    AppState.todayLog.symptoms[symptomId] = parseInt(value);
+    AppState.todayLog.symptoms[symptomId] = normaliseSymptomValue(value);
+    persistTodayLog();
     const valEl = document.getElementById('symptom-val-' + symptomId);
-    if (valEl) valEl.textContent = value + '/5';
+    if (valEl) valEl.textContent = AppState.todayLog.symptoms[symptomId] + '/5';
 }
 
 function saveTracker() {
@@ -355,9 +374,10 @@ document.addEventListener('input', function(e) {
     if (e.target.classList.contains('symptom-slider')) {
         var symptomId = e.target.dataset.symptom;
         if (symptomId && AppState.todayLog) {
-            AppState.todayLog.symptoms[symptomId] = parseInt(e.target.value);
+            AppState.todayLog.symptoms[symptomId] = normaliseSymptomValue(e.target.value);
+            persistTodayLog();
             var valEl = document.getElementById('symptom-val-' + symptomId);
-            if (valEl) valEl.textContent = e.target.value + '/5';
+            if (valEl) valEl.textContent = AppState.todayLog.symptoms[symptomId] + '/5';
         }
     } else {
         updateSliderLabels();
