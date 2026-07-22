@@ -247,8 +247,7 @@ function renderTracker() {
     }
     // Migrate legacy symptom keys to current IDs
     if (todayLog.symptoms) {
-        Object.entries(symptomMigrationMap).forEach(function(entry) {
-            var oldKey = entry[0], newKey = entry[1];
+        Object.entries(symptomMigrationMap).forEach(function([oldKey, newKey]) {
             if (todayLog.symptoms[oldKey] !== undefined && todayLog.symptoms[newKey] === undefined) {
                 todayLog.symptoms[newKey] = todayLog.symptoms[oldKey];
             }
@@ -256,7 +255,9 @@ function renderTracker() {
     } else {
         todayLog.symptoms = {};
     }
-    symptomConfig.forEach(function(s) { if (todayLog.symptoms[s.id] === undefined) todayLog.symptoms[s.id] = 0; });
+    symptomConfig.forEach(function(s) {
+        if (todayLog.symptoms[s.id] === undefined) todayLog.symptoms[s.id] = 0;
+    });
     AppState.todayLog = todayLog;
     renderWeeklyChart(logs);
     const moodEl = document.getElementById('track-mood');
