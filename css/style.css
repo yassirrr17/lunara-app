@@ -150,7 +150,9 @@ body[dir="rtl"] .chat-input-row {
     pointer-events: none;
     transform: translateX(20px);
     transition: opacity 0.35s ease, transform 0.35s ease;
+    /* Provide clearance above the bottom nav. Fallback: 100px. With safe-area: 80px + inset */
     padding-bottom: 100px;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
     z-index: 1;
 }
 
@@ -766,20 +768,37 @@ body[dir="rtl"] .action-card:active {
     margin-top: -8px;
 }
 
-/* ==================== CHAT SCREEN - CRITICAL FIX ==================== */
+/* ==================== CHAT SCREEN - RESPONSIVE LAYOUT ==================== */
 #chat {
     display: flex;
     flex-direction: column;
     padding: 0 !important;
-    height: 100vh;
-    max-height: 100vh;
+    /* Fallback for browsers without env() support */
+    height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
+    /* Exclude bottom nav from chat height. Nav height = 60px + env(safe-area-inset-bottom)
+       so the chat container ends exactly at the top of the nav, never overlapping */
+    height: calc(100vh - 60px - env(safe-area-inset-bottom));
+    max-height: calc(100vh - 60px - env(safe-area-inset-bottom));
+    /* Prevent the screen-level scroll; only .chat-messages scrolls internally */
+    overflow-y: hidden;
+}
+
+/* Use dynamic viewport height on browsers that support it (accounts for
+   collapsing address bar on iOS Safari / Android Chrome) */
+@supports (height: 100dvh) {
+    #chat {
+        height: calc(100dvh - 60px - env(safe-area-inset-bottom));
+        max-height: calc(100dvh - 60px - env(safe-area-inset-bottom));
+    }
 }
 
 .chat-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 16px 20px;
+    /* Push content below the iOS notch / status bar */
+    padding: max(16px, env(safe-area-inset-top)) 20px 16px;
     background: var(--bg-primary);
     border-bottom: 1px solid var(--bg-elevated);
     flex-shrink: 0;
@@ -815,12 +834,12 @@ body[dir="rtl"] .action-card:active {
 }
 
 .chat-title h3 {
-    font-size: 16px;
+    font-size: clamp(14px, 4vw, 16px);
     font-weight: 600;
 }
 
 .chat-title p {
-    font-size: 12px;
+    font-size: clamp(11px, 3vw, 12px);
     color: var(--text-secondary);
 }
 
@@ -833,7 +852,10 @@ body[dir="rtl"] .action-card:active {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    /* Critical: flex child must have min-height: 0 to allow shrinking and scrolling */
     min-height: 0;
+    /* Prevent layout shift when scrollbar appears/disappears */
+    scrollbar-gutter: stable;
 }
 
 .message {
@@ -851,6 +873,8 @@ body[dir="rtl"] .action-card:active {
     padding: 12px 16px;
     border-radius: var(--radius-lg);
     word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
     line-height: 1.4;
 }
 
@@ -880,7 +904,9 @@ body[dir="rtl"] .action-card:active {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    /* The bottom nav already accounts for safe-area-inset-bottom via its own
+       padding-bottom, so no additional safe-area compensation is needed here */
+    padding-bottom: 12px;
     z-index: 10;
 }
 
@@ -902,13 +928,17 @@ body[dir="rtl"] .action-card:active {
     background: var(--lavender-light);
     border: 1px solid var(--lavender);
     border-radius: 20px;
-    font-size: 13px;
+    font-size: clamp(12px, 3.5vw, 13px);
     font-family: var(--font-main);
     color: var(--lavender-dark);
     cursor: pointer;
     white-space: nowrap;
     transition: var(--transition);
     flex-shrink: 0;
+    /* Minimum 44px touch target height */
+    min-height: 44px;
+    display: flex;
+    align-items: center;
 }
 
 .chat-chip:active {
@@ -929,10 +959,13 @@ body[dir="rtl"] .action-card:active {
     border: 1.5px solid var(--bg-elevated);
     border-radius: var(--radius-lg);
     font-family: var(--font-main);
-    font-size: 14px;
+    /* Minimum 16px prevents iOS auto-zoom on focus */
+    font-size: max(16px, 1rem);
     color: var(--text-primary);
     outline: none;
     transition: var(--transition);
+    /* Minimum 44px height for touch targets */
+    min-height: 44px;
 }
 
 .chat-input:focus {
@@ -944,8 +977,10 @@ body[dir="rtl"] .action-card:active {
 }
 
 .chat-send {
-    width: 40px;
-    height: 40px;
+    /* 44×44px minimum touch target per WCAG / Apple HIG */
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--lavender-dark), var(--rose-dark));
     color: white;
@@ -956,6 +991,7 @@ body[dir="rtl"] .action-card:active {
     justify-content: center;
     font-size: 18px;
     transition: var(--transition);
+    flex-shrink: 0;
 }
 
 .chat-send:active {
@@ -967,6 +1003,46 @@ body[dir="rtl"] .action-card:active {
     color: var(--text-muted);
     text-align: center;
     margin-top: 4px;
+}
+
+/* ==================== CHAT RESPONSIVE BREAKPOINTS ==================== */
+
+/* iPhone SE / very small phones (≤ 320px) */
+@media (max-width: 320px) {
+    .chat-header {
+        gap: 8px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    .chat-messages {
+        padding: 12px;
+    }
+    .chat-input-area {
+        padding: 8px 12px 12px;
+        gap: 8px;
+    }
+    .message-bubble {
+        max-width: 85%;
+        padding: 10px 12px;
+    }
+}
+
+/* Tablets and large screens (≥ 768px) */
+@media (min-width: 768px) {
+    .message-bubble {
+        max-width: 60%;
+    }
+    .chat-input-area {
+        padding: 16px 24px;
+        padding-bottom: 16px;
+    }
+    .chat-header {
+        padding: max(20px, env(safe-area-inset-top)) 24px 20px;
+    }
+    .chat-messages {
+        padding: 20px 24px;
+        gap: 16px;
+    }
 }
 
 /* ==================== EDUCATION PAGE ==================== */
@@ -1371,7 +1447,10 @@ input:checked + .toggle-slider:before {
     right: 0;
     width: 100%;
     max-width: 430px;
+    /* Fallback height for browsers without env() support */
     height: 60px;
+    /* Include safe-area-inset-bottom in nav height so buttons sit above home indicator */
+    height: calc(60px + env(safe-area-inset-bottom));
     padding-bottom: env(safe-area-inset-bottom);
     background: var(--bg-primary);
     border-top: 1px solid var(--bg-elevated);
