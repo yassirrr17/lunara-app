@@ -39,6 +39,21 @@
 
     --font-main: 'Outfit', 'Noto Naskh Arabic', sans-serif;
     --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Safe-area inset fallbacks (0px on devices without notch/home indicator) */
+    --safe-area-top: 0px;
+    --safe-area-bottom: 0px;
+
+    /* Bottom navigation height (used for layout calculations) */
+    --nav-height: 60px;
+}
+
+/* Override safe-area variables with actual env() values on supported browsers */
+@supports (padding: env(safe-area-inset-bottom)) {
+    :root {
+        --safe-area-top: env(safe-area-inset-top);
+        --safe-area-bottom: env(safe-area-inset-bottom);
+    }
 }
 
 /* Dark Mode */
@@ -150,9 +165,8 @@ body[dir="rtl"] .chat-input-row {
     pointer-events: none;
     transform: translateX(20px);
     transition: opacity 0.35s ease, transform 0.35s ease;
-    /* Provide clearance above the bottom nav. Fallback: 100px. With safe-area: 80px + inset */
-    padding-bottom: 100px;
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+    /* Provide clearance above the bottom nav (--nav-height) + safe-area + 20px gap */
+    padding-bottom: calc(80px + var(--safe-area-bottom));
     z-index: 1;
 }
 
@@ -773,13 +787,11 @@ body[dir="rtl"] .action-card:active {
     display: flex;
     flex-direction: column;
     padding: 0 !important;
-    /* Fallback for browsers without env() support */
-    height: calc(100vh - 60px);
-    max-height: calc(100vh - 60px);
-    /* Exclude bottom nav from chat height. Nav height = 60px + env(safe-area-inset-bottom)
-       so the chat container ends exactly at the top of the nav, never overlapping */
-    height: calc(100vh - 60px - env(safe-area-inset-bottom));
-    max-height: calc(100vh - 60px - env(safe-area-inset-bottom));
+    /* Exclude bottom nav from chat height so the input area never overlaps the nav.
+       Uses CSS custom properties so safe-area fallback (0px) and actual value are
+       defined once in :root rather than duplicated here. */
+    height: calc(100vh - var(--nav-height) - var(--safe-area-bottom));
+    max-height: calc(100vh - var(--nav-height) - var(--safe-area-bottom));
     /* Prevent the screen-level scroll; only .chat-messages scrolls internally */
     overflow-y: hidden;
 }
@@ -788,8 +800,8 @@ body[dir="rtl"] .action-card:active {
    collapsing address bar on iOS Safari / Android Chrome) */
 @supports (height: 100dvh) {
     #chat {
-        height: calc(100dvh - 60px - env(safe-area-inset-bottom));
-        max-height: calc(100dvh - 60px - env(safe-area-inset-bottom));
+        height: calc(100dvh - var(--nav-height) - var(--safe-area-bottom));
+        max-height: calc(100dvh - var(--nav-height) - var(--safe-area-bottom));
     }
 }
 
@@ -798,7 +810,7 @@ body[dir="rtl"] .action-card:active {
     align-items: center;
     gap: 12px;
     /* Push content below the iOS notch / status bar */
-    padding: max(16px, env(safe-area-inset-top)) 20px 16px;
+    padding: max(16px, var(--safe-area-top)) 20px 16px;
     background: var(--bg-primary);
     border-bottom: 1px solid var(--bg-elevated);
     flex-shrink: 0;
@@ -834,12 +846,12 @@ body[dir="rtl"] .action-card:active {
 }
 
 .chat-title h3 {
-    font-size: clamp(14px, 4vw, 16px);
+    font-size: 1rem;
     font-weight: 600;
 }
 
 .chat-title p {
-    font-size: clamp(11px, 3vw, 12px);
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
@@ -928,7 +940,7 @@ body[dir="rtl"] .action-card:active {
     background: var(--lavender-light);
     border: 1px solid var(--lavender);
     border-radius: 20px;
-    font-size: clamp(12px, 3.5vw, 13px);
+    font-size: 0.8125rem;
     font-family: var(--font-main);
     color: var(--lavender-dark);
     cursor: pointer;
@@ -1037,7 +1049,7 @@ body[dir="rtl"] .action-card:active {
         padding-bottom: 16px;
     }
     .chat-header {
-        padding: max(20px, env(safe-area-inset-top)) 24px 20px;
+        padding: max(20px, var(--safe-area-top)) 24px 20px;
     }
     .chat-messages {
         padding: 20px 24px;
@@ -1447,11 +1459,10 @@ input:checked + .toggle-slider:before {
     right: 0;
     width: 100%;
     max-width: 430px;
-    /* Fallback height for browsers without env() support */
-    height: 60px;
-    /* Include safe-area-inset-bottom in nav height so buttons sit above home indicator */
-    height: calc(60px + env(safe-area-inset-bottom));
-    padding-bottom: env(safe-area-inset-bottom);
+    /* Nav height = base 60px + safe-area-inset-bottom so buttons always sit
+       above the home indicator on iOS and Android gesture navigation */
+    height: calc(var(--nav-height) + var(--safe-area-bottom));
+    padding-bottom: var(--safe-area-bottom);
     background: var(--bg-primary);
     border-top: 1px solid var(--bg-elevated);
     display: flex;
