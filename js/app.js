@@ -240,24 +240,44 @@ const symptomMigrationMap = {
 function normaliseSymptomValue(value) {
     if (value === true) return 1;
     if (value === false || value === null || value === undefined || value === '') return 0;
-    const parsed = parseInt(value, 10);
-    if (Number.isNaN(parsed)) return 0;
-    return Math.max(0, Math.min(5, parsed));
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) return 0;
+    return Math.max(0, Math.min(5, Math.round(parsed)));
+}
+
+function formatSymptomValue(value) {
+    return normaliseSymptomValue(value) + '/5';
+}
+
+function updateSymptomDisplay(symptomId) {
+    if (!AppState.todayLog || !AppState.todayLog.symptoms) return;
+    var valEl = document.getElementById('symptom-val-' + symptomId);
+    if (valEl) valEl.textContent = formatSymptomValue(AppState.todayLog.symptoms[symptomId]);
 }
 
 function persistTodayLog() {
     if (!AppState.todayLog) return;
-    let logs = Storage.get('logs') || [];
-    logs = logs.filter(l => l.date !== AppState.todayLog.date);
-    logs.push(AppState.todayLog);
+    let logs = Array.isArray(AppState.logs) ? AppState.logs : [];
+    let todayIndex = typeof AppState.todayLogIndex === 'number' ? AppState.todayLogIndex : -1;
+    if (todayIndex < 0 || !logs[todayIndex] || logs[todayIndex].date !== AppState.todayLog.date) {
+        todayIndex = logs.findIndex(l => l.date === AppState.todayLog.date);
+    }
+    if (todayIndex >= 0) logs[todayIndex] = AppState.todayLog;
+    else {
+        logs.push(AppState.todayLog);
+        todayIndex = logs.length - 1;
+    }
     Storage.set('logs', logs);
     AppState.logs = logs;
+    AppState.todayLogIndex = todayIndex;
 }
 
 function renderTracker() {
     const logs = Storage.get('logs') || [];
     const today = new Date().toISOString().split('T')[0];
-    let todayLog = logs.find(l => l.date === today);
+    let todayLogIndex = logs.findIndex(l => l.date === today);
+    let todayLog = todayLogIndex >= 0 ? logs[todayLogIndex] : null;
+    const isNewTodayLog = !todayLog;
     if (!todayLog) {
         todayLog = { date: today, mood: 3, sleep: 6, stress: 3, water: 5, symptoms: {} };
         symptomConfig.forEach(s => todayLog.symptoms[s.id] = 0);
@@ -276,6 +296,9 @@ function renderTracker() {
         todayLog.symptoms[s.id] = normaliseSymptomValue(todayLog.symptoms[s.id]);
     });
     AppState.todayLog = todayLog;
+    AppState.todayLogIndex = todayLogIndex;
+    AppState.logs = logs;
+    if (isNewTodayLog) persistTodayLog();
     renderWeeklyChart(logs);
     const moodEl = document.getElementById('track-mood');
     const sleepEl = document.getElementById('track-sleep');
@@ -294,13 +317,12 @@ function renderTracker() {
             return '<div class="symptom-slider-group">' +
                 '<div class="tracker-slider-label">' +
                     '<label for="' + sliderId + '">' + getText(s.label) + '</label>' +
-                    '<span id="symptom-val-' + s.id + '">' + val + '/5</span>' +
+                    '<span id="symptom-val-' + s.id + '">' + formatSymptomValue(val) + '</span>' +
                 '</div>' +
                 '<input type="range" min="0" max="5" step="1" value="' + val + '" ' +
                     'class="tracker-slider symptom-slider" ' +
                     'id="' + sliderId + '" ' +
-                    'data-symptom="' + s.id + '" ' +
-                    'aria-label="' + getText(s.label) + '">' +
+                    'data-symptom="' + s.id + '">' +
             '</div>';
         }).join('');
     }
@@ -340,8 +362,7 @@ function setSymptom(symptomId, value) {
     if (!AppState.todayLog) return;
     AppState.todayLog.symptoms[symptomId] = normaliseSymptomValue(value);
     persistTodayLog();
-    const valEl = document.getElementById('symptom-val-' + symptomId);
-    if (valEl) valEl.textContent = AppState.todayLog.symptoms[symptomId] + '/5';
+    updateSymptomDisplay(symptomId);
 }
 
 function saveTracker() {
@@ -376,8 +397,7 @@ document.addEventListener('input', function(e) {
         if (symptomId && AppState.todayLog) {
             AppState.todayLog.symptoms[symptomId] = normaliseSymptomValue(e.target.value);
             persistTodayLog();
-            var valEl = document.getElementById('symptom-val-' + symptomId);
-            if (valEl) valEl.textContent = AppState.todayLog.symptoms[symptomId] + '/5';
+            updateSymptomDisplay(symptomId);
         }
     } else {
         updateSliderLabels();
