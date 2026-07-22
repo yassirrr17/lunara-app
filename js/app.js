@@ -3,7 +3,8 @@
 const AppState = {
     user: null, isPremium: false, language: 'en', theme: 'light',
     messagesToday: 0, messageLimit: 3, currentScreen: 'onboarding',
-    previousScreen: null, todayLog: null, logs: [], chatHistory: [], onboardingStep: 1
+    previousScreen: null, todayLog: null, logs: [], chatHistory: [], onboardingStep: 1,
+    isAuthenticated: false, userProfile: null
 };
 
 const Storage = {
@@ -50,6 +51,7 @@ function navigateTo(screenId) {
     if (screenId === 'education') renderEducation('all');
     if (screenId === 'chat') renderChat();
     if (screenId === 'settings') renderSettings();
+    if (screenId === 'profile') renderProfile();
 }
 
 function showMainApp() { document.getElementById('onboarding').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); document.getElementById('bottom-nav').classList.remove('hidden'); }
@@ -60,16 +62,10 @@ function nextOnboardingStep() {
     const current = document.querySelector('.onboarding-step:not(.hidden)');
     const step = parseInt(current.dataset.step);
     
-    // Validation for Step 2 (Age)
     if (step === 2 && !onboardingData.age) { shakeElement(current); return; }
-    
-    // Validation for Step 3 (Symptoms) - at least one required
     if (step === 3 && onboardingData.symptoms.length === 0) { shakeElement(current); return; }
-    
-    // Validation for Step 4 (Goals) - at least one required
     if (step === 4 && onboardingData.goals.length === 0) { shakeElement(current); return; }
     
-    // Capture Step 5 (Lifestyle) data
     if (step === 5) {
         const sleepSlider = document.getElementById('ob-sleep');
         const stressSlider = document.getElementById('ob-stress');
@@ -85,7 +81,6 @@ function nextOnboardingStep() {
 }
 
 function finishOnboarding() {
-    // Capture final Step 5 data
     const sleepSlider = document.getElementById('ob-sleep');
     const stressSlider = document.getElementById('ob-stress');
     const gpToggle = document.querySelector('.ob-toggle.selected');
@@ -94,6 +89,16 @@ function finishOnboarding() {
     if (gpToggle) onboardingData.gp = gpToggle.dataset.value;
     
     AppState.user = { name: 'Beautiful', age: onboardingData.age, symptoms: onboardingData.symptoms, goals: onboardingData.goals, joined: new Date().toISOString() };
+    AppState.isAuthenticated = true;
+    AppState.userProfile = { 
+        name: 'Beautiful', 
+        email: 'user@example.com', 
+        joinDate: new Date(), 
+        articlesRead: 0, 
+        checkInsCompleted: 0, 
+        savedArticles: 0, 
+        streak: 1 
+    };
     Storage.set('state', AppState); Storage.set('user', AppState.user);
     showMainApp(); renderHome();
     AppState.chatHistory = [{ from: 'luna', text: getText({ en: "Welcome to Lunara. I am Luna, and I am here to walk beside you through this. There is no rush, no judgment, and no such thing as a silly question. How are you feeling today?", ar: "مرحبًا بك في لونارا. أنا لونا، وأنا هنا لأمشي بجانبك. لا عجلة، لا حكم، وليس هناك سؤال سخيف. كيف تشعرين اليوم؟" }), time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) }];
@@ -103,16 +108,13 @@ function finishOnboarding() {
 function shakeElement(el) { el.style.animation = 'none'; el.offsetHeight; el.style.animation = 'shake 0.4s ease'; }
 
 document.addEventListener('click', (e) => {
-    // Age selection - auto-advance to next step
     if (e.target.closest('.age-options .ob-option')) { 
         document.querySelectorAll('.age-options .ob-option').forEach(btn => btn.classList.remove('selected')); 
         const btn = e.target.closest('.age-options .ob-option');
         btn.classList.add('selected');
         onboardingData.age = btn.dataset.value;
-        // Auto-advance after a short delay for visual feedback
         setTimeout(() => nextOnboardingStep(), 300);
     }
-    // Symptom selection (multi-select)
     if (e.target.closest('.symptom-options .ob-option')) { 
         const btn = e.target.closest('.symptom-options .ob-option'); 
         btn.classList.toggle('selected'); 
@@ -123,7 +125,6 @@ document.addEventListener('click', (e) => {
             onboardingData.symptoms = onboardingData.symptoms.filter(s => s !== val); 
         }
     }
-    // Goal selection (multi-select)
     if (e.target.closest('.goal-options .ob-option')) { 
         const btn = e.target.closest('.goal-options .ob-option'); 
         btn.classList.toggle('selected'); 
@@ -134,7 +135,6 @@ document.addEventListener('click', (e) => {
             onboardingData.goals = onboardingData.goals.filter(g => g !== val); 
         }
     }
-    // GP toggle buttons
     if (e.target.closest('.ob-toggle')) { 
         const btn = e.target.closest('.ob-toggle'); 
         btn.parentElement.querySelectorAll('.ob-toggle').forEach(b => b.classList.remove('selected')); 
@@ -142,6 +142,24 @@ document.addEventListener('click', (e) => {
         onboardingData.gp = btn.dataset.value;
     }
 });
+
+// ==================== ARTICLES DATA WITH IMAGES ====================
+const articles = [
+    { id: 1, filter: 'all', title: { en: 'The Three Stages of Menopause, Gently Explained', ar: 'المراحل الثلاث لانقطاع الطمث، موضحة بلطف' }, readTime: '4 min', featured: true, imageUrl: 'https://images.unsplash.com/photo-1508003516284-85f43b4b46b7?w=800&h=450&fit=crop', author: 'Dr. Emma Walsh', publishDate: '2024-03-15',
+      content: { en: '<div class="article-body"><p>Menopause is not a single event. It is a journey with three phases, and understanding them can help you feel less alone.</p><p><strong>Perimenopause (the early stage):</strong> This usually starts in your 40s. Your ovaries are gradually reducing oestrogen and progesterone. Your cycle may become irregular — sometimes months pass, sometimes weeks apart. Brain fog, mood swings, and sleep disruption often start here.</p><p><strong>Menopause (the milestone):</strong> Officially, you have reached menopause when you have not had a period for 12 consecutive months. It is a moment in time, not a state.</p><p><strong>Postmenopause:</strong> Everything after that 12-month mark. Some symptoms ease, but others — like vaginal dryness or joint pain — may linger.</p><p>You are not going mad. Your body is simply adjusting to a new chapter.</p></div>', ar: '<div class="article-body"><p>انقطاع الطمث ليس حدثًا واحدًا. إنها رحلة بثلاث مراحل.</p></div>' }},
+    { id: 2, filter: 'peri', title: { en: 'Why Brain Fog Is Real & What Helps', ar: 'لماذا ضباب الدماغ حقيقي (وما يساعد)' }, readTime: '5 min', imageUrl: 'https://images.unsplash.com/photo-1559825481-12a05b00b928?w=800&h=450&fit=crop', author: 'Dr. Sarah Chen', publishDate: '2024-03-10',
+      content: { en: '<div class="article-body"><p>Brain fog is one of the most isolating symptoms because no one else can see it. You can see a hot flash coming, but brain fog creeps up quietly.</p><p><strong>The science:</strong> Oestrogen supports acetylcholine, a neurotransmitter crucial for memory and focus. When oestrogen drops, so does acetylcholine. Your brain is not broken — it is recalibrating.</p><p><strong>What helps:</strong><ul><li>Sleep: Non-negotiable. Your brain consolidates memories during sleep.</li><li>Protein: Amino acids support neurotransmitter production.</li><li>Movement: Even a 20-minute walk increases blood flow to your brain.</li><li>Hydration: Dehydration worsens brain fog instantly.</li></ul></p></div>', ar: '' }},
+    { id: 3, filter: 'menopause', title: { en: 'Hot Flushes: The Science of Sudden Heat', ar: 'الهبات الساخنة: علم الحرارة المفاجئة' }, readTime: '3 min', imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d93c7b5534?w=800&h=450&fit=crop', author: 'Dr. James Miller', publishDate: '2024-03-05',
+      content: { en: '<div class="article-body"><p>A hot flash does not come from nowhere. It is a predictable response from your hypothalamus.</p><p><strong>What is happening:</strong> Your hypothalamus — your internal thermostat — becomes oversensitive during menopause. A tiny rise in core temperature (sometimes just 0.5°C) triggers a full cooling response: sweating, flushing, heart racing.</p><p><strong>Why it feels worse at night:</strong> Core body temperature naturally rises in the evening. For many women, this is when hot flashes strike.</p><p><strong>What helps:</strong> Layers you can remove, cool water nearby, regular exercise, and good sleep hygiene.</p></div>', ar: '' }},
+    { id: 4, filter: 'peri', title: { en: 'Rebuilding Sleep When Hormones Shift', ar: 'إعادة بناء النوم عندما تتغير الهرمونات' }, readTime: '4 min', imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=450&fit=crop', author: 'Dr. Lisa Wong', publishDate: '2024-02-28',
+      content: { en: '<div class="article-body"><p>Sleep disruption is one of the cruellest symptoms because everything feels harder without rest. Progesterone, which helps us feel sleepy, is dropping. Cortisol, which should be lowest at night, is often elevated.</p><p><strong>Small changes that work:</strong><ul><li>Consistency: Same bedtime, same wake time, even weekends.</li><li>Cool, dark room: Aim for 16–19°C.</li><li>No screens after 8pm: Blue light suppresses melatonin.</li><li>Magnesium: Consider a spray or bath salt.</li></ul></p></div>', ar: '' }},
+    { id: 5, filter: 'post', title: { en: 'Nutrition After 40: The Quiet Upgrade', ar: 'التغذية بعد 40: الترقية الهادئة' }, readTime: '4 min', imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=450&fit=crop', author: 'Dr. Amanda Roberts', publishDate: '2024-02-20',
+      content: { en: '<div class="article-body"><p>Your body needs different fuel now. Metabolism has slowed, but nutrient needs have climbed.</p><p><strong>Protein matters more:</strong> Aim for 25–30g per meal. It preserves muscle, stabilizes blood sugar, and supports mood.</p><p><strong>Healthy fats are not the enemy:</strong> Olive oil, avocado, nuts, and fatty fish support hormone production and brain health.</p><p><strong>Iron and B vitamins:</strong> Many women become anaemic after significant blood loss stops. Get levels checked.</p></div>', ar: '' }},
+    { id: 6, filter: 'all', title: { en: 'Hormone Changes & Emotional Wellbeing', ar: 'تغييرات الهرمونات والرفاهية العاطفية' }, readTime: '5 min', imageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=450&fit=crop', author: 'Dr. Rachel Green', publishDate: '2024-02-15',
+      content: { en: '<div class="article-body"><p>The emotional symptoms of menopause are not just "in your head" — they are firmly rooted in biochemistry.</p><p><strong>Why mood shifts happen:</strong> Oestrogen affects serotonin production. When oestrogen fluctuates, so does your neurotransmitter balance.</p><p><strong>What to expect:</strong> Anxiety, depression, irritability, and emotional intensity are all common and treatable.</p></div>', ar: '' }},
+    { id: 7, filter: 'post', title: { en: 'Strength Training After 40', ar: 'تمارين القوة بعد 40' }, readTime: '6 min', imageUrl: 'https://images.unsplash.com/photo-1552258297-4a6b2db18264?w=800&h=450&fit=crop', author: 'Coach Maria Santos', publishDate: '2024-02-10',
+      content: { en: '<div class="article-body"><p>Strength training is not just for young people. After 40, it becomes even more important for bone health, metabolism, and mood.</p><p><strong>Why it matters:</strong> Oestrogen decline accelerates bone loss. Strength training builds and maintains bone density naturally.</p><p><strong>Getting started:</strong> Begin with 2-3 sessions per week. Focus on compound movements that engage multiple muscle groups.</p></div>', ar: '' }}
+];
 
 function renderHome() {
     const user = AppState.user || { name: 'Beautiful' };
@@ -284,6 +302,7 @@ function saveTracker() {
     logs = logs.filter(l => l.date !== AppState.todayLog.date);
     logs.push(AppState.todayLog);
     Storage.set('logs', logs); AppState.logs = logs;
+    if (AppState.userProfile) AppState.userProfile.checkInsCompleted++;
     const btn = document.querySelector('.btn-save');
     if (btn) {
         const original = btn.innerHTML;
@@ -409,19 +428,6 @@ function renderCommunity(tab) {
 
 document.addEventListener('click', (e) => { if (e.target.closest('.comm-tab')) renderCommunity(e.target.closest('.comm-tab').dataset.tab); });
 
-const articles = [
-    { id: 1, filter: 'all', title: { en: 'The three stages of menopause, gently explained', ar: 'المراحل الثلاث لانقطاع الطمث، موضحة بلطف' }, readTime: '4 min', featured: true,
-      content: { en: '<div class="article-hero"><h1>The three stages of menopause, gently explained</h1></div><div class="article-body"><p>Menopause is not a single event. It is a journey with three phases, and understanding them can help you feel less alone.</p><p><strong>Perimenopause (the early stage):</strong> This usually starts in your 40s. Your ovaries are gradually reducing oestrogen and progesterone. Your cycle may become irregular — sometimes months pass, sometimes weeks apart. Brain fog, mood swings, and sleep disruption often start here.</p><p><strong>Menopause (the milestone):</strong> Officially, you have reached menopause when you have not had a period for 12 consecutive months. It is a moment in time, not a state.</p><p><strong>Postmenopause:</strong> Everything after that 12-month mark. Some symptoms ease, but others — like vaginal dryness or joint pain — may linger.</p><p>You are not going mad. Your body is simply adjusting to a new chapter.</p></div>', ar: '<div class="article-hero"><h1>المراحل الثلاث لانقطاع الطمث</h1></div><div class="article-body"><p>انقطاع الطمث ليس حدثًا واحدًا. إنها رحلة بثلاث مراحل.</p></div>' }},
-    { id: 2, filter: 'peri', title: { en: 'Why brain fog is real (and what helps)', ar: 'لماذا ضباب الدماغ حقيقي (وما يساعد)' }, readTime: '5 min',
-      content: { en: '<div class="article-hero" style="background:linear-gradient(135deg, var(--sage-light), var(--lavender-light))"><h1>Why brain fog is real</h1></div><div class="article-body"><p>Brain fog is one of the most isolating symptoms because no one else can see it. You can see a hot flash coming, but brain fog creeps up quietly.</p><p><strong>The science:</strong> Oestrogen supports acetylcholine, a neurotransmitter crucial for memory and focus. When oestrogen drops, so does acetylcholine. Your brain is not broken — it is recalibrating.</p><p><strong>What helps:</strong><ul><li>Sleep: Non-negotiable. Your brain consolidates memories during sleep.</li><li>Protein: Amino acids support neurotransmitter production.</li><li>Movement: Even a 20-minute walk increases blood flow to your brain.</li><li>Hydration: Dehydration worsens brain fog instantly.</li></ul></p></div>', ar: '' }},
-    { id: 3, filter: 'menopause', title: { en: 'Hot flashes: the science of the sudden heat', ar: 'الهبات الساخنة: علم الحرارة المفاجئة' }, readTime: '3 min',
-      content: { en: '<div class="article-hero" style="background:linear-gradient(135deg, var(--rose-light), var(--peach-light))"><h1>Hot flashes: the science</h1></div><div class="article-body"><p>A hot flash does not come from nowhere. It is a predictable response from your hypothalamus.</p><p><strong>What is happening:</strong> Your hypothalamus — your internal thermostat — becomes oversensitive during menopause. A tiny rise in core temperature (sometimes just 0.5°C) triggers a full cooling response: sweating, flushing, heart racing.</p><p><strong>Why it feels worse at night:</strong> Core body temperature naturally rises in the evening. For many women, this is when hot flashes strike.</p><p><strong>What helps:</strong> Layers you can remove, cool water nearby, regular exercise, and good sleep hygiene.</p></div>', ar: '' }},
-    { id: 4, filter: 'peri', title: { en: 'Rebuilding sleep when hormones shift', ar: 'إعادة بناء النوم عندما تتغير الهرمونات' }, readTime: '4 min',
-      content: { en: '<div class="article-hero" style="background:linear-gradient(135deg, var(--lavender-light), var(--sage-light))"><h1>Rebuilding sleep</h1></div><div class="article-body"><p>Sleep disruption is one of the cruellest symptoms because everything feels harder without rest. Progesterone, which helps us feel sleepy, is dropping. Cortisol, which should be lowest at night, is often elevated.</p><p><strong>Small changes that work:</strong><ul><li>Consistency: Same bedtime, same wake time, even weekends.</li><li>Cool, dark room: Aim for 16–19°C.</li><li>No screens after 8pm: Blue light suppresses melatonin.</li><li>Magnesium: Consider a spray or bath salt.</li></ul></p></div>', ar: '' }},
-    { id: 5, filter: 'post', title: { en: 'Nutrition after 40: the quiet upgrade', ar: 'التغذية بعد 40: الترقية الهادئة' }, readTime: '4 min',
-      content: { en: '<div class="article-hero" style="background:linear-gradient(135deg, var(--peach-light), var(--rose-light))"><h1>Nutrition after 40</h1></div><div class="article-body"><p>Your body needs different fuel now. Metabolism has slowed, but nutrient needs have climbed.</p><p><strong>Protein matters more:</strong> Aim for 25–30g per meal. It preserves muscle, stabilizes blood sugar, and supports mood.</p><p><strong>Healthy fats are not the enemy:</strong> Olive oil, avocado, nuts, and fatty fish support hormone production and brain health.</p><p><strong>Iron and B vitamins:</strong> Many women become anaemic after significant blood loss stops. Get levels checked.</p></div>', ar: '' }},
-];
-
 function renderEducation(filter) {
     document.querySelectorAll('.edu-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === filter));
     const feed = document.getElementById('education-feed');
@@ -431,9 +437,9 @@ function renderEducation(filter) {
     const regular = filtered.filter(a => !a.featured);
     let html = '';
     if (featured) {
-        html += '<div class="edu-featured" onclick="openArticle(' + featured.id + ')"><span class="edu-featured-badge">Featured</span><div class="edu-featured-text"><h3>' + featured.title[AppState.language] + '</h3><p>' + featured.readTime + ' read</p></div></div>';
+        html += '<div class="edu-featured" onclick="openArticle(' + featured.id + ')" style="background-image: url(\'' + featured.imageUrl + '\'); background-size: cover; background-position: center;"><span class="edu-featured-badge">' + getText({en: 'Featured', ar: 'مميز'}) + '</span><div class="edu-featured-text"><h3>' + featured.title[AppState.language] + '</h3><div class="edu-card-meta"><span class="edu-reading-time">📖 ' + featured.readTime + '</span><span class="edu-category-badge">' + featured.filter.toUpperCase() + '</span></div></div></div>';
     }
-    html += '<div class="edu-grid">' + regular.map(a => '<div class="edu-card" onclick="openArticle(' + a.id + ')"><div class="edu-card-img">&#128218;</div><div class="edu-card-body"><h4>' + a.title[AppState.language] + '</h4><p>' + a.readTime + ' read</p></div></div>').join('') + '</div>';
+    html += '<div class="edu-grid">' + regular.map(a => '<div class="edu-card" onclick="openArticle(' + a.id + ')"><div class="edu-card-img" style="background-image: url(\'' + a.imageUrl + '\'); background-size: cover; background-position: center;"><div class="edu-card-img-overlay"></div></div><div class="edu-card-body"><h4>' + a.title[AppState.language] + '</h4><div class="edu-card-meta"><span class="edu-reading-time">📖 ' + a.readTime + '</span><span class="edu-category-badge">' + (a.filter === 'all' ? 'wellness' : a.filter).toUpperCase() + '</span></div><p style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">' + (a.author || 'Lunara Team') + '</p></div></div>').join('') + '</div>';
     feed.innerHTML = html;
 }
 
@@ -443,9 +449,12 @@ function openArticle(id) {
     const article = articles.find(a => a.id === id);
     if (!article) return;
     const content = article.content[AppState.language] || article.content['en'];
-    document.getElementById('article-content').innerHTML = content;
+    const articleHtml = '<div class="article-hero" style="background-image: url(\'' + article.imageUrl + '\'); background-size: cover; background-position: center;"><div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.3));"></div><h1 style="position: relative; z-index: 1; color: white; font-size: 24px; padding: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">' + article.title[AppState.language] + '</h1></div><div class="article-body">' + content + '</div>';
+    document.getElementById('article-content').innerHTML = articleHtml;
+    if (AppState.userProfile) AppState.userProfile.articlesRead++;
     navigateTo('article');
 }
+
 function goBackFromArticle() { navigateTo('education'); }
 
 function renderChat() {
@@ -535,7 +544,6 @@ function generateLunaResponse(userText) {
     if (lower.includes('perimenopause') || lower.includes('what is') || lower.includes('explain')) {
         return getText({ en: "Perimenopause is the transition phase before menopause. It usually starts in your 40s, sometimes earlier. Your ovaries gradually slow down oestrogen production, and hormone levels become unpredictable. This can last 4–10 years. You are not going mad — your body is simply transitioning.", ar: "فترة ما قبل انقطاع الطمث هي مرحلة الانتقال قبل انقطاع الطمث. عادة ما يبدأ في الأربعينات. أنتِ لستِ مجنونة — جسدك في انتقال." });
     }
-    // Default warm response
     return getText({
         en: "Thank you for sharing that with me. I want you to know that whatever you are feeling right now is valid. Your body is going through one of the biggest hormonal shifts of your life, and I am here to walk beside you through it. You are not alone, and you are not broken.",
         ar: "شكرًا لمشاركتي ذلك. أريدك أن تعرفي أن كل ما تشعرين به الآن صحيح. أنا هنا معك. أنتِ لستِ وحدك."
@@ -551,12 +559,42 @@ function closePremiumModal() {
     if (modal) modal.classList.add('hidden');
 }
 
+function renderProfile() {
+    const profileContainer = document.getElementById('profile-content');
+    if (!profileContainer) return;
+    
+    const profile = AppState.userProfile || AppState.user || {};
+    const stats = [
+        { label: getText({en: 'Articles Read', ar: 'مقالات مقروءة'}), value: profile.articlesRead || 0 },
+        { label: getText({en: 'Check-ins', ar: 'التسجيلات'}), value: profile.checkInsCompleted || 0 },
+        { label: getText({en: 'Saved Articles', ar: 'مقالات محفوظة'}), value: profile.savedArticles || 0 },
+        { label: getText({en: 'Streak', ar: 'سلسلة'}), value: profile.streak || 1 }
+    ];
+    
+    profileContainer.innerHTML = `
+        <div class="profile-header">
+            <div class="profile-avatar-large">
+                <div class="profile-initial">${(profile.name || 'U')[0].toUpperCase()}</div>
+            </div>
+            <h2 class="profile-name">${profile.name || 'User'}</h2>
+            <p class="profile-email">${profile.email || 'user@lunara.app'}</p>
+            <p class="profile-membership">${AppState.isPremium ? getText({en: 'Premium Member', ar: 'عضو بريميوم'}) : getText({en: 'Free Member', ar: 'عضو مجاني'})}</p>
+        </div>
+        
+        <div class="profile-stats-grid">
+            ${stats.map(stat => '<div class="profile-stat"><div class="stat-num">' + stat.value + '</div><div class="stat-text">' + stat.label + '</div></div>').join('')}
+        </div>
+        
+        <button class="btn-primary" style="margin: 24px 0 12px;" onclick="navigateTo('settings')">
+            <span>${getText({en: 'Account Settings', ar: 'إعدادات الحساب'})}</span>
+        </button>
+    `;
+}
+
 function renderSettings() {
-    const themeToggle = document.getElementById('theme-toggle');
-    const currentLang = document.getElementById('current-lang');
+    document.getElementById('theme-toggle').checked = AppState.theme === 'dark';
+    document.getElementById('current-lang').textContent = AppState.language === 'en' ? 'English' : 'العربية';
     const premiumStatus = document.getElementById('premium-status');
-    if (themeToggle) themeToggle.checked = AppState.theme === 'dark';
-    if (currentLang) currentLang.textContent = AppState.language === 'en' ? 'English' : 'العربية';
     if (premiumStatus) premiumStatus.textContent = AppState.isPremium ? (AppState.language === 'en' ? 'Active' : 'نشط') : getText({en: 'Free', ar: 'مجاني'});
 }
 
@@ -594,6 +632,7 @@ function toggleLanguage() {
     if (AppState.currentScreen === 'education') renderEducation('all');
     if (AppState.currentScreen === 'chat') renderChat();
     if (AppState.currentScreen === 'daily-plan') renderDailyPlan();
+    if (AppState.currentScreen === 'profile') renderProfile();
 }
 
 function applyLanguage() {
@@ -630,5 +669,4 @@ function setupEventListeners() {
     }
 }
 
-// Start the app
 document.addEventListener('DOMContentLoaded', init);
