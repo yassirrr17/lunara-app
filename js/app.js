@@ -17,6 +17,31 @@ const Storage = {
 // Modular helpers for symptom log storage and recommendation context.
 // Designed to be extended for Premium features (trend analysis, viewed-article
 // tracking, repetition avoidance, personalised insights with chat history).
+const LATEST_SYMPTOM_LOG_KEY = 'latestSymptomLog';
+
+// Ensures stored values are plain JSON-like objects only.
+function isPlainObject(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+    const proto = Object.getPrototypeOf(value);
+    return proto === Object.prototype || proto === null;
+}
+
+// Creates a full symptom snapshot using all configured symptom keys.
+function buildSymptomSnapshot(symptoms) {
+    const snapshot = {};
+    symptomConfig.forEach(function(s) {
+        snapshot[s.id] = normaliseSymptomValue(symptoms && symptoms[s.id]);
+    });
+    return snapshot;
+}
+
+function isValidSymptomLog(value) {
+    return isPlainObject(value)
+        && typeof value.date === 'string'
+        && typeof value.timestamp === 'number'
+        && isPlainObject(value.symptoms);
+}
+
 const SymptomLog = {
     save(log) {
         try {
@@ -24,16 +49,20 @@ const SymptomLog = {
             const snapshot = {
                 date: log.date,
                 timestamp: Date.now(),
-                symptoms: Object.assign({}, log.symptoms || {})
+                symptoms: buildSymptomSnapshot(log.symptoms)
             };
-            Storage.set('latestSymptomLog', snapshot);
+            Storage.set(LATEST_SYMPTOM_LOG_KEY, snapshot);
         } catch(e) {}
     },
     getLatest() {
         try {
-            const data = Storage.get('latestSymptomLog');
-            if (!data || typeof data !== 'object' || typeof data.date !== 'string' || typeof data.symptoms !== 'object') return null;
-            return data;
+            const data = Storage.get(LATEST_SYMPTOM_LOG_KEY);
+            if (!isValidSymptomLog(data)) return null;
+            return {
+                date: data.date,
+                timestamp: data.timestamp,
+                symptoms: buildSymptomSnapshot(data.symptoms)
+            };
         } catch(e) { return null; }
     },
     getTopSymptoms(minScore, limit) {
@@ -274,8 +303,8 @@ const symptomMigrationMap = {
 };
 
 // ==================== LEARN RECOMMENDATIONS ====================
-// Maps symptom IDs to article IDs in the articles array.
-// Using IDs (not titles) means recommendations stay correct if titles change.
+// Primary strategy: discover matching articles from existing Learn metadata.
+// Fallback strategy: map symptom IDs to article IDs if metadata matching fails.
 const SYMPTOM_ARTICLE_MAP = {
     'hot-flashes-night-sweats': 3,
     'sleep-problems': 4,
@@ -289,18 +318,72 @@ const SYMPTOM_ARTICLE_MAP = {
     'vaginal-dryness': 1
 };
 
+const SYMPTOM_ARTICLE_HINTS = {
+    'hot-flashes-night-sweats': ['hot flash', 'hot flush', 'night sweat', 'sudden heat'],
+    'sleep-problems': ['sleep', 'insomnia', 'night', 'rest'],
+    'brain-fog-memory': ['brain fog', 'memory', 'focus', 'concentrat'],
+    'mood-changes-irritability': ['mood', 'emotional', 'irritab', 'wellbeing'],
+    'anxiety': ['anxiety', 'emotional', 'wellbeing', 'mood'],
+    'fatigue-exhaustion': ['nutrition', 'energy', 'fatigue', 'protein'],
+    'joint-muscle-aches': ['strength', 'muscle', 'joint', 'training'],
+    'headaches': ['hormone', 'stage', 'menopause'],
+    'weight-gain': ['nutrition', 'weight', 'metabolism', 'protein'],
+    'vaginal-dryness': ['postmenopause', 'menopause', 'stages']
+};
+
+// Uses Learn metadata text at runtime so recommendations follow current article copy.
+function getArticleText(article) {
+    if (!article) return '';
+    const title = article.title || {};
+    const content = article.content || {};
+    return ((title.en || '') + ' ' + (content.en || '')).toLowerCase();
+}
+
+let articleTextIndexCache = null;
+
+function getArticleTextIndex() {
+    if (!articleTextIndexCache) {
+        // Article metadata is static for this runtime, so a lazy cache is sufficient.
+        // If articles are changed dynamically, reset `articleTextIndexCache` to rebuild it.
+        articleTextIndexCache = articles.map(function(article) {
+            return { article: article, text: getArticleText(article) };
+        });
+    }
+    return articleTextIndexCache;
+}
+
+// Resolves the closest existing Learn article for a symptom, then falls back to ID mapping.
+function resolveArticleBySymptom(symptomId) {
+    const hints = SYMPTOM_ARTICLE_HINTS[symptomId] || [];
+    let bestArticle = null;
+    let bestScore = 0;
+    getArticleTextIndex().forEach(function(entry) {
+        var haystack = entry.text;
+        if (!haystack) return;
+        var score = hints.reduce(function(total, hint) {
+            return total + (haystack.includes(hint) ? 1 : 0);
+        }, 0);
+        if (score > bestScore) {
+            bestScore = score;
+            bestArticle = entry.article;
+        }
+    });
+    if (bestArticle && bestScore > 0) return bestArticle;
+    var fallbackArticleId = SYMPTOM_ARTICLE_MAP[symptomId];
+    if (!fallbackArticleId) return null;
+    return articles.find(function(a) { return a.id === fallbackArticleId; }) || null;
+}
+
 // Returns up to `symptomIds.length` real Learn article titles for the given symptom IDs.
 // Titles are read from the articles array at call-time, so they stay current automatically.
 function getLearnRecommendations(symptomIds) {
     if (!Array.isArray(symptomIds) || symptomIds.length === 0) return [];
-    var seen = [];
-    var titles = [];
+    const seenIds = [];
+    const titles = [];
     symptomIds.forEach(function(id) {
-        var articleId = SYMPTOM_ARTICLE_MAP[id];
-        if (!articleId || seen.indexOf(articleId) >= 0) return;
-        var article = articles.find(function(a) { return a.id === articleId; });
-        if (article) {
-            seen.push(articleId);
+        const article = resolveArticleBySymptom(id);
+        if (article && seenIds.indexOf(article.id) < 0) {
+            seenIds.push(article.id);
             titles.push(article.title[AppState.language] || article.title['en']);
         }
     });
