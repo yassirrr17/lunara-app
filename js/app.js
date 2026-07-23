@@ -28,7 +28,7 @@ function isPlainObject(value) {
 
 // Creates a full symptom snapshot using all configured symptom keys.
 function buildSymptomSnapshot(symptoms) {
-    var snapshot = {};
+    const snapshot = {};
     symptomConfig.forEach(function(s) {
         snapshot[s.id] = normaliseSymptomValue(symptoms && symptoms[s.id]);
     });
@@ -334,8 +334,8 @@ const SYMPTOM_ARTICLE_HINTS = {
 // Uses Learn metadata text at runtime so recommendations follow current article copy.
 function getArticleText(article) {
     if (!article) return '';
-    var title = article.title || {};
-    var content = article.content || {};
+    const title = article.title || {};
+    const content = article.content || {};
     return ((title.en || '') + ' ' + (content.en || '')).toLowerCase();
 }
 
@@ -344,6 +344,7 @@ let articleTextIndexCache = null;
 function getArticleTextIndex() {
     if (!articleTextIndexCache) {
         // Article metadata is static for this runtime, so a lazy cache is sufficient.
+        // If articles are changed dynamically, reset `articleTextIndexCache` to rebuild it.
         articleTextIndexCache = articles.map(function(article) {
             return { article: article, text: getArticleText(article) };
         });
@@ -353,9 +354,9 @@ function getArticleTextIndex() {
 
 // Resolves the closest existing Learn article for a symptom, then falls back to ID mapping.
 function resolveArticleBySymptom(symptomId) {
-    var hints = SYMPTOM_ARTICLE_HINTS[symptomId] || [];
-    var bestArticle = null;
-    var bestScore = 0;
+    const hints = SYMPTOM_ARTICLE_HINTS[symptomId] || [];
+    let bestArticle = null;
+    let bestScore = 0;
     getArticleTextIndex().forEach(function(entry) {
         var haystack = entry.text;
         if (!haystack) return;
@@ -377,10 +378,10 @@ function resolveArticleBySymptom(symptomId) {
 // Titles are read from the articles array at call-time, so they stay current automatically.
 function getLearnRecommendations(symptomIds) {
     if (!Array.isArray(symptomIds) || symptomIds.length === 0) return [];
-    var seenIds = [];
-    var titles = [];
+    const seenIds = [];
+    const titles = [];
     symptomIds.forEach(function(id) {
-        var article = resolveArticleBySymptom(id);
+        const article = resolveArticleBySymptom(id);
         if (article && seenIds.indexOf(article.id) < 0) {
             seenIds.push(article.id);
             titles.push(article.title[AppState.language] || article.title['en']);
