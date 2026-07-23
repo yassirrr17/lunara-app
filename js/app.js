@@ -327,7 +327,8 @@ function maybeInjectSymptomRecommendation() {
             var labelPart = symptomLabels.length > 1
                 ? symptomLabels[0] + ' و' + symptomLabels[1]
                 : symptomLabels[0];
-            msg = 'بناءً على تسجيلك الأخير، لاحظت أن ' + labelPart + ' كانا حاضرَين. ';
+            var presencePhrase = symptomLabels.length > 1 ? 'كانا حاضرَين' : 'كان حاضرًا';
+            msg = 'بناءً على تسجيلك الأخير، لاحظت أن ' + labelPart + ' ' + presencePhrase + '. ';
             msg += titles.length === 1
                 ? 'قد تجدين هذا المقال مفيدًا في قسم التعلم: \u201c' + titles[0] + '\u201d. لا ضغط على الإطلاق — أنا هنا متى كنتِ مستعدة.'
                 : 'قد تجدين هذين المقالَين مفيدَين في قسم التعلم: \u201c' + titles[0] + '\u201d و\u201c' + titles[1] + '\u201d. لا ضغط — أنا هنا معك.';
@@ -335,7 +336,8 @@ function maybeInjectSymptomRecommendation() {
             var labelPartEn = symptomLabels.length > 1
                 ? symptomLabels[0].toLowerCase() + ' and ' + symptomLabels[1].toLowerCase()
                 : symptomLabels[0].toLowerCase();
-            msg = 'I noticed from your recent log that ' + labelPartEn + ' has been present. ';
+            var haveHas = symptomLabels.length > 1 ? 'have' : 'has';
+            msg = 'I noticed from your recent log that ' + labelPartEn + ' ' + haveHas + ' been present. ';
             msg += titles.length === 1
                 ? 'There is a helpful article in the Learn section \u2014 \u201c' + titles[0] + '\u201d \u2014 if you would like to explore it. No pressure at all, I am here for whatever you need.'
                 : 'You might find these articles in the Learn section helpful: \u201c' + titles[0] + '\u201d and \u201c' + titles[1] + '\u201d. No pressure \u2014 I am right here whenever you are ready.';
