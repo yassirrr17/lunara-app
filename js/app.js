@@ -35,6 +35,13 @@ function buildSymptomSnapshot(symptoms) {
     return snapshot;
 }
 
+function isValidSymptomLog(value) {
+    return isPlainObject(value)
+        && typeof value.date === 'string'
+        && typeof value.timestamp === 'number'
+        && isPlainObject(value.symptoms);
+}
+
 const SymptomLog = {
     save(log) {
         try {
@@ -50,7 +57,7 @@ const SymptomLog = {
     getLatest() {
         try {
             const data = Storage.get(LATEST_SYMPTOM_LOG_KEY);
-            if (!isPlainObject(data) || typeof data.date !== 'string' || typeof data.timestamp !== 'number' || !isPlainObject(data.symptoms)) return null;
+            if (!isValidSymptomLog(data)) return null;
             return {
                 date: data.date,
                 timestamp: data.timestamp,
@@ -332,10 +339,11 @@ function getArticleText(article) {
     return ((title.en || '') + ' ' + (content.en || '')).toLowerCase();
 }
 
-var articleTextIndexCache = null;
+let articleTextIndexCache = null;
 
 function getArticleTextIndex() {
     if (!articleTextIndexCache) {
+        // Article metadata is static for this runtime, so a lazy cache is sufficient.
         articleTextIndexCache = articles.map(function(article) {
             return { article: article, text: getArticleText(article) };
         });
