@@ -329,15 +329,22 @@ function getArticleText(article) {
     return ((title.en || '') + ' ' + (content.en || '')).toLowerCase();
 }
 
-const ARTICLE_TEXT_INDEX = articles.map(function(article) {
-    return { article: article, text: getArticleText(article) };
-});
+var articleTextIndexCache = null;
+
+function getArticleTextIndex() {
+    if (!articleTextIndexCache) {
+        articleTextIndexCache = articles.map(function(article) {
+            return { article: article, text: getArticleText(article) };
+        });
+    }
+    return articleTextIndexCache;
+}
 
 function resolveArticleBySymptom(symptomId) {
     var hints = SYMPTOM_ARTICLE_HINTS[symptomId] || [];
     var bestArticle = null;
     var bestScore = 0;
-    ARTICLE_TEXT_INDEX.forEach(function(entry) {
+    getArticleTextIndex().forEach(function(entry) {
         var haystack = entry.text;
         if (!haystack) return;
         var score = hints.reduce(function(total, hint) {
