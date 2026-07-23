@@ -19,12 +19,14 @@ const Storage = {
 // tracking, repetition avoidance, personalised insights with chat history).
 const LATEST_SYMPTOM_LOG_KEY = 'latestSymptomLog';
 
+// Ensures stored values are plain JSON-like objects only.
 function isPlainObject(value) {
     if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
     const proto = Object.getPrototypeOf(value);
     return proto === Object.prototype || proto === null;
 }
 
+// Creates a full symptom snapshot using all configured symptom keys.
 function buildSymptomSnapshot(symptoms) {
     var snapshot = {};
     symptomConfig.forEach(function(s) {
@@ -322,6 +324,7 @@ const SYMPTOM_ARTICLE_HINTS = {
     'vaginal-dryness': ['postmenopause', 'menopause', 'stages']
 };
 
+// Uses Learn metadata text at runtime so recommendations follow current article copy.
 function getArticleText(article) {
     if (!article) return '';
     var title = article.title || {};
@@ -340,6 +343,7 @@ function getArticleTextIndex() {
     return articleTextIndexCache;
 }
 
+// Resolves the closest existing Learn article for a symptom, then falls back to ID mapping.
 function resolveArticleBySymptom(symptomId) {
     var hints = SYMPTOM_ARTICLE_HINTS[symptomId] || [];
     var bestArticle = null;
