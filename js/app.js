@@ -13,6 +13,42 @@ const Storage = {
     clear() { Object.keys(localStorage).forEach(k => { if(k.startsWith('lunara_')) localStorage.removeItem(k); }); }
 };
 
+// ==================== SYMPTOM LOG MODULE ====================
+// Modular helpers for symptom log storage and recommendation context.
+// Designed to be extended for Premium features (trend analysis, viewed-article
+// tracking, repetition avoidance, personalised insights with chat history).
+const SymptomLog = {
+    save(log) {
+        try {
+            if (!log || typeof log.date !== 'string') return;
+            const snapshot = {
+                date: log.date,
+                timestamp: Date.now(),
+                symptoms: Object.assign({}, log.symptoms || {})
+            };
+            Storage.set('latestSymptomLog', snapshot);
+        } catch(e) {}
+    },
+    getLatest() {
+        try {
+            const data = Storage.get('latestSymptomLog');
+            if (!data || typeof data !== 'object' || typeof data.date !== 'string' || typeof data.symptoms !== 'object') return null;
+            return data;
+        } catch(e) { return null; }
+    },
+    getTopSymptoms(minScore, limit) {
+        minScore = typeof minScore === 'number' ? minScore : 3;
+        limit = typeof limit === 'number' ? limit : 2;
+        const log = this.getLatest();
+        if (!log || typeof log.symptoms !== 'object') return [];
+        return Object.entries(log.symptoms)
+            .filter(function(pair) { return typeof pair[1] === 'number' && pair[1] >= minScore; })
+            .sort(function(a, b) { return b[1] - a[1]; })
+            .slice(0, limit)
+            .map(function(pair) { return pair[0]; });
+    }
+};
+
 function init() {
     const saved = Storage.get('state');
     if (saved) { Object.assign(AppState, saved); applyTheme(); applyLanguage(); 
@@ -49,7 +85,7 @@ function navigateTo(screenId) {
     if (screenId === 'daily-plan') renderDailyPlan();
     if (screenId === 'community') renderCommunity('stories');
     if (screenId === 'education') renderEducation('all');
-    if (screenId === 'chat') renderChat();
+    if (screenId === 'chat') { maybeInjectSymptomRecommendation(); renderChat(); }
     if (screenId === 'settings') renderSettings();
     if (screenId === 'profile') renderProfile();
 }
@@ -237,6 +273,81 @@ const symptomMigrationMap = {
     'fatigue': 'fatigue-exhaustion'
 };
 
+// ==================== LEARN RECOMMENDATIONS ====================
+// Maps symptom IDs to article IDs in the articles array.
+// Using IDs (not titles) means recommendations stay correct if titles change.
+const SYMPTOM_ARTICLE_MAP = {
+    'hot-flashes-night-sweats': 3,
+    'sleep-problems': 4,
+    'brain-fog-memory': 2,
+    'mood-changes-irritability': 6,
+    'anxiety': 6,
+    'fatigue-exhaustion': 5,
+    'joint-muscle-aches': 7,
+    'headaches': 1,
+    'weight-gain': 5,
+    'vaginal-dryness': 1
+};
+
+// Returns up to `symptomIds.length` real Learn article titles for the given symptom IDs.
+// Titles are read from the articles array at call-time, so they stay current automatically.
+function getLearnRecommendations(symptomIds) {
+    if (!Array.isArray(symptomIds) || symptomIds.length === 0) return [];
+    var seen = [];
+    var titles = [];
+    symptomIds.forEach(function(id) {
+        var articleId = SYMPTOM_ARTICLE_MAP[id];
+        if (!articleId || seen.indexOf(articleId) >= 0) return;
+        var article = articles.find(function(a) { return a.id === articleId; });
+        if (article) {
+            seen.push(articleId);
+            titles.push(article.title[AppState.language] || article.title['en']);
+        }
+    });
+    return titles;
+}
+
+// Called on every chat screen open.  Injects a warm Luna recommendation message
+// at most once per symptom-log date so it never repeats for the same save.
+function maybeInjectSymptomRecommendation() {
+    try {
+        var topSymptoms = SymptomLog.getTopSymptoms(3, 2);
+        if (!topSymptoms.length) return;
+        var log = SymptomLog.getLatest();
+        if (!log) return;
+        if (Storage.get('lastRecommendationDate') === log.date) return;
+        var titles = getLearnRecommendations(topSymptoms);
+        if (!titles.length) return;
+        var symptomLabels = topSymptoms.map(function(id) {
+            var cfg = symptomConfig.find(function(s) { return s.id === id; });
+            return cfg ? (cfg.label[AppState.language] || cfg.label['en']) : id;
+        });
+        var msg;
+        if (AppState.language === 'ar') {
+            var labelPart = symptomLabels.length > 1
+                ? symptomLabels[0] + ' و' + symptomLabels[1]
+                : symptomLabels[0];
+            var presencePhrase = symptomLabels.length > 1 ? 'كانا حاضرَين' : 'كان حاضرًا';
+            msg = 'بناءً على تسجيلك الأخير، لاحظت أن ' + labelPart + ' ' + presencePhrase + '. ';
+            msg += titles.length === 1
+                ? 'قد تجدين هذا المقال مفيدًا في قسم التعلم: \u201c' + titles[0] + '\u201d. لا ضغط على الإطلاق — أنا هنا متى كنتِ مستعدة.'
+                : 'قد تجدين هذين المقالَين مفيدَين في قسم التعلم: \u201c' + titles[0] + '\u201d و\u201c' + titles[1] + '\u201d. لا ضغط — أنا هنا معك.';
+        } else {
+            var labelPartEn = symptomLabels.length > 1
+                ? symptomLabels[0].toLowerCase() + ' and ' + symptomLabels[1].toLowerCase()
+                : symptomLabels[0].toLowerCase();
+            var haveHas = symptomLabels.length > 1 ? 'have' : 'has';
+            msg = 'I noticed from your recent log that ' + labelPartEn + ' ' + haveHas + ' been present. ';
+            msg += titles.length === 1
+                ? 'There is a helpful article in the Learn section \u2014 \u201c' + titles[0] + '\u201d \u2014 if you would like to explore it. No pressure at all, I am here for whatever you need.'
+                : 'You might find these articles in the Learn section helpful: \u201c' + titles[0] + '\u201d and \u201c' + titles[1] + '\u201d. No pressure \u2014 I am right here whenever you are ready.';
+        }
+        AppState.chatHistory.push({ from: 'luna', text: msg, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+        Storage.set('chatHistory', AppState.chatHistory);
+        Storage.set('lastRecommendationDate', log.date);
+    } catch(e) {}
+}
+
 function normaliseSymptomValue(value) {
     if (value === true) return 1;
     if (value === false || value === null || value === undefined || value === '') return 0;
@@ -379,6 +490,7 @@ function saveTracker() {
     logs = logs.filter(l => l.date !== AppState.todayLog.date);
     logs.push(AppState.todayLog);
     Storage.set('logs', logs); AppState.logs = logs;
+    SymptomLog.save(AppState.todayLog);
     if (AppState.userProfile) AppState.userProfile.checkInsCompleted++;
     const btn = document.querySelector('.btn-save');
     if (btn) {
