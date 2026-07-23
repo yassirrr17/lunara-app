@@ -20,7 +20,9 @@ const Storage = {
 const LATEST_SYMPTOM_LOG_KEY = 'latestSymptomLog';
 
 function isPlainObject(value) {
-    return !!value && typeof value === 'object' && !Array.isArray(value);
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+    const proto = Object.getPrototypeOf(value);
+    return proto === Object.prototype || proto === null;
 }
 
 function buildSymptomSnapshot(symptoms) {
@@ -327,19 +329,23 @@ function getArticleText(article) {
     return ((title.en || '') + ' ' + (content.en || '')).toLowerCase();
 }
 
+const ARTICLE_TEXT_INDEX = articles.map(function(article) {
+    return { article: article, text: getArticleText(article) };
+});
+
 function resolveArticleBySymptom(symptomId) {
     var hints = SYMPTOM_ARTICLE_HINTS[symptomId] || [];
     var bestArticle = null;
     var bestScore = 0;
-    articles.forEach(function(article) {
-        var haystack = getArticleText(article);
+    ARTICLE_TEXT_INDEX.forEach(function(entry) {
+        var haystack = entry.text;
         if (!haystack) return;
         var score = hints.reduce(function(total, hint) {
             return total + (haystack.includes(hint) ? 1 : 0);
         }, 0);
         if (score > bestScore) {
             bestScore = score;
-            bestArticle = article;
+            bestArticle = entry.article;
         }
     });
     if (bestArticle && bestScore > 0) return bestArticle;
